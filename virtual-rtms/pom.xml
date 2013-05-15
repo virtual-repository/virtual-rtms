@@ -1,0 +1,103 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.virtualrepository</groupId>
+  <artifactId>virtual-rtms</artifactId>
+  <version>1.0.0-SNAPSHOT</version>
+  <name>Virtual RTMS</name>
+  <description>A Virtual Repository Plugin for the RTMS repository</description>
+  
+  	<repositories>
+		<repository>
+			<snapshots />
+			<id>fao-snapshots</id>
+			<name>libs-snapshot</name>
+			<url>http://artifactory.fao.org/artifactory/libs-snapshot</url>
+		</repository>
+		<repository>
+			<id>gcube-snapshots</id>
+			<name>gCube Snapshots</name>
+			<url>http://maven.research-infrastructures.eu/nexus/content/repositories/gcube-snapshots</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>gcube-externals</id>
+			<name>gCube Externals</name>
+			<url>http://maven.research-infrastructures.eu/nexus/content/repositories/gcube-externals</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
+
+
+	<dependencies>
+
+		<dependency>
+			<groupId>org.virtualrepository</groupId>
+			<artifactId>virtual-repository</artifactId>
+			<version>[1.0.0-SNAPSHOT,2.0.0-SNAPSHOT)</version>
+		</dependency>
+
+
+
+
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.11</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-simple</artifactId>
+			<version>1.7.2</version>
+			<scope>test</scope>
+		</dependency>
+
+	</dependencies>
+
+
+	<build>
+
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.0</version>
+				<configuration>
+					<source>1.6</source>
+					<target>1.6</target>
+				</configuration>
+			</plugin>
+		</plugins>
+
+	</build>
+
+	<profiles>
+		<profile>
+			<id>fao-ci</id>
+			<distributionManagement>
+				<repository>
+					<id>${dm.rel.id}</id>
+					<name>${dm.rel.id-name}</name>
+					<url>${dm.rel.id-url}</url>
+				</repository>
+				<snapshotRepository>
+					<id>${dm.snap.id}</id>
+					<name>${dm.snap.id-name}</name>
+					<url>${dm.snap.id-url}</url>
+				</snapshotRepository>
+			</distributionManagement>
+		</profile>
+	</profiles>
+	
+</project>
