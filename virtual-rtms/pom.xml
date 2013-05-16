@@ -6,6 +6,12 @@
   <name>Virtual RTMS</name>
   <description>A Virtual Repository Plugin for the RTMS repository</description>
   
+  
+  	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+  
+  
   	<repositories>
 		<repository>
 			<snapshots />
