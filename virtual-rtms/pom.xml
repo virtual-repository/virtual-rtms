@@ -19,28 +19,6 @@
 			<name>libs-snapshot</name>
 			<url>http://artifactory.fao.org/artifactory/libs-snapshot</url>
 		</repository>
-		<repository>
-			<id>gcube-snapshots</id>
-			<name>gCube Snapshots</name>
-			<url>http://maven.research-infrastructures.eu/nexus/content/repositories/gcube-snapshots</url>
-			<releases>
-				<enabled>false</enabled>
-			</releases>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
-		<repository>
-			<id>gcube-externals</id>
-			<name>gCube Externals</name>
-			<url>http://maven.research-infrastructures.eu/nexus/content/repositories/gcube-externals</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
 	</repositories>
 
 
