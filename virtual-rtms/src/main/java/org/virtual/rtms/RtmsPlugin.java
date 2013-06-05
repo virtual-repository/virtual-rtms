@@ -1,6 +1,6 @@
 package org.virtual.rtms;
 
-import static java.util.Collections.*;
+import static java.util.Collections.singleton;
 
 import java.util.Collection;
 
