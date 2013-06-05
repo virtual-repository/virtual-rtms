@@ -8,7 +8,6 @@ import java.util.LinkedList;
 import org.virtual.rtms.figis.impl.RtmsAbstractAttribute;
 import org.virtual.rtms.figis.impl.RtmsAbstractConcept;
 import org.virtualrepository.Property;
-import org.virtualrepository.csv.CsvAsset;
 import org.virtualrepository.csv.CsvCodelist;
 import org.virtualrepository.impl.AbstractType;
 import org.virtualrepository.spi.MutableAsset;
@@ -46,15 +45,15 @@ public class RtmsCodelistFinder {
 
 
 
-	private LinkedList<CsvAsset> getCsvAssetList() {
-		LinkedList<CsvAsset> res = new LinkedList<CsvAsset>();
+	private LinkedList<CsvCodelist> getCsvAssetList() {
+		LinkedList<CsvCodelist> res = new LinkedList<CsvCodelist>();
 		for (RtmsAbstractConcept concept : rtmsAbstractionService.getConceptAbstractions()) {
 			for (RtmsAbstractAttribute attribute : concept.codeAttributes()) {
 				Property rtms_concept_property = concept.properties().lookup(RtmsAbstractConcept.RTMS_CONCEPT_ID);
 				Property rtms_codeatt_property = attribute.properties().lookup(RtmsAbstractAttribute.RTMS_ATTRIBUTE_ID);
 				String asset_id = "rtms" + rtms_concept_property.value() + "-" + rtms_codeatt_property.value();
 				String asset_name = concept.name() + " - " + attribute.name();
-				CsvAsset asset = new CsvAsset(asset_id, asset_name);
+				CsvCodelist asset = new CsvCodelist(asset_id, asset_name,0);
 				asset.properties().add(rtms_concept_property);
 				asset.properties().add(rtms_codeatt_property);
 				

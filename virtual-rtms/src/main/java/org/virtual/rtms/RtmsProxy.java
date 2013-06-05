@@ -27,7 +27,7 @@ public class RtmsProxy implements ServiceProxy, Lifecycle {
 	private static final String CONFIGURATION_FILE = "rtms.properties";
 
 	private final RtmsBrowser browser = new RtmsBrowser();
-	private final List<CsvPublisher> publishers = new ArrayList<CsvPublisher>();
+	private final List<Publisher<?,?>> publishers = new ArrayList<Publisher<?,?>>();
 	private final List<Importer<?,?>> importers = new ArrayList<Importer<?,?>>();
 
 	private static RtmsConfiguration configuration = null;
@@ -54,8 +54,7 @@ public class RtmsProxy implements ServiceProxy, Lifecycle {
 
 
 		
-		publishers.add(new CsvPublisher(configuration));
-		CsvImporter baseImporter = new CsvImporter(configuration);
+		CsvCodelistImporter baseImporter = new CsvCodelistImporter(configuration);
 		importers.add(baseImporter);
 		importers.add(adapt(baseImporter, new Table2CsvStream<CsvCodelist>()));
 
