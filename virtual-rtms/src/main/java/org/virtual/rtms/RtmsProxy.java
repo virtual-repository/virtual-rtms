@@ -1,11 +1,15 @@
 package org.virtual.rtms;
 
+import static org.virtualrepository.spi.ImportAdapter.*;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.virtualrepository.csv.CsvCodelist;
+import org.virtualrepository.csv.Table2CsvStream;
 import org.virtualrepository.spi.Browser;
 import org.virtualrepository.spi.Importer;
 import org.virtualrepository.spi.Lifecycle;
@@ -24,7 +28,7 @@ public class RtmsProxy implements ServiceProxy, Lifecycle {
 
 	private final RtmsBrowser browser = new RtmsBrowser();
 	private final List<CsvPublisher> publishers = new ArrayList<CsvPublisher>();
-	private final List<CsvImporter> importers = new ArrayList<CsvImporter>();
+	private final List<Importer<?,?>> importers = new ArrayList<Importer<?,?>>();
 
 	private static RtmsConfiguration configuration = null;
 
@@ -53,7 +57,7 @@ public class RtmsProxy implements ServiceProxy, Lifecycle {
 		publishers.add(new CsvPublisher(configuration));
 		CsvImporter baseImporter = new CsvImporter(configuration);
 		importers.add(baseImporter);
-		//importers.add(ImportAdapter.adapt(baseImporter, new Table2CsvStream()));
+		importers.add(adapt(baseImporter, new Table2CsvStream<CsvCodelist>()));
 
 	}
 
