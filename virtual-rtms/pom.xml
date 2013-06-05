@@ -16,9 +16,9 @@
 	<repositories>
 		<repository>
 			<snapshots />
-			<id>fao-snapshots</id>
-			<name>libs-snapshot</name>
-			<url>http://artifactory.fao.org/artifactory/libs-snapshot</url>
+			<id>fips-snapshots</id>
+			<name>fips-snapshot</name>
+			<url>http://artifactory.fao.org/artifactory/fips</url>
 		</repository>
 	</repositories>
 
@@ -49,8 +49,8 @@
 		</dependency>
 		<dependency>
 			<groupId>com.oracle</groupId>
-			<artifactId>ojdbc14</artifactId>
-			<version>10.2.0.3.0</version>
+			<artifactId>ojdbc6</artifactId>
+			<version>11.2.0.3</version>
 		</dependency>
 	</dependencies>
 
