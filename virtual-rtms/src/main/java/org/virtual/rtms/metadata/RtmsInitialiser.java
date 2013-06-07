@@ -1,68 +1,32 @@
 /**
  * 
  */
-package org.virtual.rtms.figis.impl;
+package org.virtual.rtms.metadata;
 
 import java.util.Hashtable;
 
+public class RtmsInitialiser  {
 
-/**
- * @author Sibeni
- *
- */
-public class RtmsReaderInit  {
-
-	
-	public static final String DEFAULT_COLUMN_META = "META";
-	
-	public static final String INIT_TABLE = "Table";
-	public static final String INIT_COLUMN = "Column";
-	public static final String INIT_META_COLUMN = "MetaColumn";
-	
-	
-	
-	
-	private int id;
-	
-	private String classname;
-	
 	private Hashtable<String, String> inits = new Hashtable<String, String>();
 	
 	
-	/**
-	 * 
-	 */
-	public RtmsReaderInit(int id, String classname, String init) {
-		this.id = id;
-		this.classname = classname;
+	public RtmsInitialiser(String init) {
 		parseInitString(init);
-	}
-
-
-	public int getId() {
-		return id;
-	}
-
-
-	public String getClassname() {
-		return classname;
 	}
 
 	public boolean hasInit(String key){
 		return inits.containsKey(key);
 	}
 
-	public String getInit(String key){
+	public String init(String key){
 		return inits.get(key);
 	}
 
 	
-	protected void integrate (RtmsReaderInit rtmsReaderInit){
-		for (String key : rtmsReaderInit.inits.keySet()) {
-			if (!inits.containsKey(key)){
+	protected void integrate(RtmsInitialiser rtmsReaderInit){
+		for (String key : rtmsReaderInit.inits.keySet())
+			if (!inits.containsKey(key))
 				inits.put(key, rtmsReaderInit.inits.get(key));
-			}
-		} 
 	}
 
 
@@ -92,7 +56,6 @@ public class RtmsReaderInit  {
 			}
 		}
 	}
-	
 	
 	
 	

@@ -1,7 +1,6 @@
-package org.virtual.rtms;
+package org.virtual.rtms.codelist;
 
-import org.virtual.rtms.figis.codelist.CodelistService;
-import org.virtual.rtms.figis.codelist.CodelistServiceFactory;
+import org.virtual.rtms.RtmsConfiguration;
 import org.virtualrepository.csv.CsvCodelist;
 import org.virtualrepository.impl.Type;
 import org.virtualrepository.spi.Importer;
@@ -9,15 +8,11 @@ import org.virtualrepository.tabular.Table;
 
 public class CsvCodelistImporter implements Importer<CsvCodelist, Table> {
 
-	CodelistService codelistService;
+	CodelistImporter codelistService;
 	
 	
-	@SuppressWarnings("unused")
-	private final RtmsConfiguration configuration;
-
 	public CsvCodelistImporter(RtmsConfiguration configuration) throws Exception  {
-		this.configuration = configuration;
-		codelistService = CodelistServiceFactory.getService();
+		codelistService = new CodelistImporter(configuration);
 	}
 	
 	@Override
@@ -32,9 +27,7 @@ public class CsvCodelistImporter implements Importer<CsvCodelist, Table> {
 
 	@Override
 	public Table retrieve(CsvCodelist asset) throws Exception {
-		Table res = null;
-		res = codelistService.getCodelist(asset);
-		return res;
+		return codelistService.retrieveCodelistFrom(asset);
 	}
 
 }
