@@ -5,9 +5,8 @@ import org.virtualrepository.Asset;
 import org.virtualrepository.VirtualRepository;
 import org.virtualrepository.csv.CsvCodelist;
 import org.virtualrepository.impl.Repository;
-import org.virtualrepository.sdmx.SdmxCodelist;
 
-public class BrowserIntegrationTests {
+public class ImporterIntegrationTests {
 
 	
 	@Test
@@ -16,18 +15,6 @@ public class BrowserIntegrationTests {
 		VirtualRepository repo = new Repository();
 		
 		repo.discover(CsvCodelist.type);
-		
-		for (Asset asset : repo) 
-			System.out.println(asset);
-		
-	}
-	
-	@Test
-	public void discoverSdmxCodelists() {
-		
-		VirtualRepository repo = new Repository();
-		
-		repo.discover(SdmxCodelist.type);
 		
 		for (Asset asset : repo) 
 			System.out.println(asset);

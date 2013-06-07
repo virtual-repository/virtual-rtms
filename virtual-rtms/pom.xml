@@ -20,6 +20,16 @@
 			<name>fips-snapshot</name>
 			<url>http://artifactory.fao.org/artifactory/fips</url>
 		</repository>
+		<repository>
+			<id>sdmxsource</id>
+			<url>http://www.metadatatechnology.com/nexus/content/repositories/releases</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+		</repository>
 	</repositories>
 
 
@@ -32,7 +42,17 @@
 		</dependency>
 
 
-
+		<dependency>
+			<groupId>org.sdmxsource</groupId>
+			<artifactId>SdmxStructureParser</artifactId>
+			<version>0.9.9</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>log4j</artifactId>
+					<groupId>log4j</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
 
 		<dependency>
 			<groupId>junit</groupId>

@@ -8,6 +8,8 @@ import java.util.Properties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.virtual.rtms.codelist.CsvCodelistImporter;
+import org.virtual.rtms.codelist.SdmxCodelistImporter;
 import org.virtualrepository.csv.CsvCodelist;
 import org.virtualrepository.csv.Table2CsvStream;
 import org.virtualrepository.spi.Browser;
@@ -26,7 +28,7 @@ public class RtmsProxy implements ServiceProxy, Lifecycle {
 
 	private static final String CONFIGURATION_FILE = "rtms.properties";
 
-	private final RtmsBrowser browser = new RtmsBrowser();
+	private RtmsBrowser browser;
 	private final List<Publisher<?,?>> publishers = new ArrayList<Publisher<?,?>>();
 	private final List<Importer<?,?>> importers = new ArrayList<Importer<?,?>>();
 
@@ -46,20 +48,20 @@ public class RtmsProxy implements ServiceProxy, Lifecycle {
 
 		try {
 			configuration = new RtmsConfiguration(properties);
-			log.info("Connecting to FIGIS database on {}",configuration.url());
+			log.info("connecting to FIGIS database on {}",configuration.url());
 		}
 		catch(Exception e) {
 			throw new IllegalStateException("invalid configuration (see cause) ",e);	
 		}
 
 
-		
+		browser = new RtmsBrowser(configuration);
 		CsvCodelistImporter baseImporter = new CsvCodelistImporter(configuration);
 		importers.add(baseImporter);
 		importers.add(adapt(baseImporter, new Table2CsvStream<CsvCodelist>()));
+		importers.add(new SdmxCodelistImporter(configuration));
 
 	}
-
 
 	@Override
 	public Browser browser() {
@@ -75,17 +77,5 @@ public class RtmsProxy implements ServiceProxy, Lifecycle {
 	public List<? extends Publisher<?, ?>> publishers() {
 		return publishers;
 	}
-
-
-	public static RtmsConfiguration getConfiguration() {
-		return configuration;
-	}
-
-
-
-
-
-
-
 
 }
