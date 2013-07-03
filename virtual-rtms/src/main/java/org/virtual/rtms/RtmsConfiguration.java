@@ -1,17 +1,24 @@
 package org.virtual.rtms;
 
-import static org.virtual.rtms.Constants.*;
-import static org.virtualrepository.Utils.*;
+import static org.virtual.rtms.Constants.CONFIG_DRIVER;
+import static org.virtual.rtms.Constants.CONFIG_ENDPOINT;
+import static org.virtual.rtms.Constants.CONFIG_NO_REFRESH;
+import static org.virtual.rtms.Constants.CONFIG_PWD;
+import static org.virtual.rtms.Constants.CONFIG_URL;
+import static org.virtual.rtms.Constants.CONFIG_USER;
+import static org.virtualrepository.Utils.notNull;
 
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.DriverManager;
 import java.util.Properties;
 
+import javax.sql.DataSource;
 import javax.sql.PooledConnection;
 
 import oracle.jdbc.pool.OraclePooledConnection;
 
+import org.apache.commons.dbcp.BasicDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.virtual.rtms.metadata.RtmsMetadata;
@@ -23,9 +30,11 @@ public class RtmsConfiguration {
 	
 	public static final String ORACLE_JDBC_DRIVER = "oracle.jdbc.driver.OracleDriver";
 	
-	private final PooledConnection connectionsPool;
+	/* FFiorellato - removed */
+	//private final PooledConnection connectionsPool;
 	private final Properties properties;
 	private RtmsMetadata metadata;
+	private DataSource dataSource;
 	
 	public RtmsConfiguration(Properties properties) {
 		
@@ -33,15 +42,19 @@ public class RtmsConfiguration {
 		
 		validateStaticConfiguration(properties);
 		
+		/* FFiorellato - removed */
 		//init pool
-		this.connectionsPool = newConnectionPool();
+		//this.connectionsPool = newConnectionPool();
 		
+		this.dataSource = this.setupDataSource();
 	}
 	
 	public Connection connection() {
 		
 		try {
-			return connectionsPool.getConnection();
+//			return connectionsPool.getConnection();
+			
+			return this.dataSource.getConnection();
 		}
 		catch(Exception e) {
 			throw new RuntimeException("cannot connect to RTMS (see cause)",e);
@@ -78,6 +91,35 @@ public class RtmsConfiguration {
 		notNull(CONFIG_PWD, properties.getProperty(CONFIG_PWD));
 	}
 	
+	public DataSource setupDataSource() {
+		try {
+			BasicDataSource ds = new BasicDataSource();
+			ds.setDriverClassName(properties.getProperty(ORACLE_JDBC_DRIVER));
+			ds.setUrl(properties.getProperty(CONFIG_ENDPOINT));
+			ds.setUsername(properties.getProperty(CONFIG_USER));
+			ds.setPassword(properties.getProperty(CONFIG_PWD));
+			ds.setDefaultAutoCommit(false);
+			
+			ds.setMaxActive(50);
+			ds.setMaxIdle(50);
+			ds.setMaxWait(10000);
+			
+			ds.setTestWhileIdle(true);
+			ds.setTestOnBorrow(true);
+			ds.setTestOnReturn(false);
+			
+			ds.setValidationQuery("SELECT 1 FROM DUAL");
+			ds.setRemoveAbandoned(true);
+			ds.setRemoveAbandonedTimeout(60 * 60);
+			
+			return ds;
+		} catch (Throwable t) {
+			throw new RuntimeException("failed to initialise JDBC driver", t);
+		}
+	}
+	
+	/* FFiorellato - removed */
+	/*
 	private PooledConnection newConnectionPool() {
 		
 		try {
@@ -98,7 +140,7 @@ public class RtmsConfiguration {
 			throw new RuntimeException("failed to initialise JDBC driver",e);
 		}
 	}
-	
+	*/
 	
 }
 
