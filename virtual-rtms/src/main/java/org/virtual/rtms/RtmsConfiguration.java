@@ -94,7 +94,8 @@ public class RtmsConfiguration {
 	/* FFiorellato - added */
 	
 	/**
-	 * @return a basic data source (see commons-dbcp) that acts as a connection pool 
+	 * @return a basic data source (see commons-dbcp) that acts as a (configurable) connection pool. 
+	 * You probably want to change a few configuration parameters, though. These are proven to work fine. 
 	 */
 	public DataSource setupDataSource() {
 		try {
