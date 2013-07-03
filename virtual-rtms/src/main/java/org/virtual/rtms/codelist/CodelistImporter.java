@@ -3,17 +3,29 @@
  */
 package org.virtual.rtms.codelist;
 
-import static java.util.Collections.*;
-import static org.virtual.rtms.Constants.*;
-import static org.virtual.rtms.Utils.*;
+import static java.util.Collections.singletonList;
+import static org.virtual.rtms.Constants.DEFAULT_COLUMN_META;
+import static org.virtual.rtms.Constants.INIT_COLUMN;
+import static org.virtual.rtms.Constants.INIT_META_COLUMN;
+import static org.virtual.rtms.Constants.INIT_TABLE;
+import static org.virtual.rtms.Constants.META_ATTR_NAME;
+import static org.virtual.rtms.Constants.RTMS_ATTRIBUTE_CLASSNAME;
+import static org.virtual.rtms.Constants.RTMS_ATTRIBUTE_ID;
+import static org.virtual.rtms.Constants.RTMS_CONCEPT_ID;
+import static org.virtual.rtms.Utils.cleanup;
+import static org.virtualrepository.Utils.notNull;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.xml.namespace.QName;
 
@@ -80,6 +92,20 @@ public class CodelistImporter {
 		return attribute;
 	}
 	
+	private Set<String> columnNames(Connection connection, RtmsConcept concept) throws SQLException {
+		Set<String> columnNames = new HashSet<String>();
+		
+		ResultSet meta = connection.getMetaData().getColumns(null, "FIGIS", concept.initialiser().init(INIT_TABLE), null);
+		
+		while(meta.next()) {
+			columnNames.add(meta.getString("COLUMN_NAME"));
+		}
+		
+		meta.close();
+		
+		return columnNames;
+	}
+	
 	public Table retrieveCodelistFrom(Asset asset) {
 		
 		log.info("retrieving asset "+asset.id());
@@ -103,11 +129,19 @@ public class CodelistImporter {
 			Statement stmnt = null;
 			ResultSet rs = null;
 			try {
-				
 				connection = configuration.connection();
+				
+
 				stmnt = connection.createStatement();
-				String query = buildQuery(concept,nameAttribute,attributes);
-				rs = stmnt.executeQuery(query);
+				String query = buildQuery(concept,nameAttribute,attributes, this.columnNames(connection, concept));
+				
+				try {
+					rs = stmnt.executeQuery(query);
+				} catch(SQLException SQLe) {
+					log.error("Unable to execute query {} ({})", query, SQLe.getMessage());
+					
+					throw new RuntimeException("Unable to execute query", SQLe);
+				}
 				
 				while (rs.next()) {
 					Row row = nextRow(rs,columns);
@@ -133,27 +167,50 @@ public class CodelistImporter {
 	}
 	
 	
-	private String buildQuery(RtmsConcept concept, RtmsAttribute name_attribute, List<RtmsAttribute> attributes) {
-		
-		StringBuffer res = new StringBuffer(200);
-		res.append("SELECT ");
-		
+	private String buildQuery(RtmsConcept concept, RtmsAttribute name_attribute, List<RtmsAttribute> attributes, Set<String> columnNames) {
+		List<String> columns = new ArrayList<String>();
+
 		for (RtmsAttribute attribute : attributes) {
-			res.append(getAttributeColumn(attribute));
-			res.append(", ");
+			columns.add(getAttributeColumn(attribute));
 		}
 
 		String name_column = name_attribute.initialiser().init(INIT_COLUMN);
 		
+		if(!columnNames.contains(name_column + "_E")) 
+			if(columnNames.contains("NAME_E"))
+				name_column = "NAME";
+			else if(columnNames.contains("SHORT_NAME_E"))
+				name_column = "SHORT_NAME";
+			else
+				;//FAQ OFF!!!
+
 		if (name_attribute.properties().lookup(RTMS_ATTRIBUTE_CLASSNAME).value(String.class).equals(META_ATTR_NAME)){
-			res.append(name_column + "_E, ");
-			res.append(name_column + "_F, ");
-			res.append(name_column + "_S ");
+			if(columnNames.contains(name_column + "_E"))
+				columns.add(name_column + "_E");
+//			else
+//				nameColumns.add("NULL AS " + name_column + "_E");
 
+			if(columnNames.contains(name_column + "_F"))
+				columns.add(name_column + "_F");
+//			else
+//				nameColumns.add("NULL AS " + name_column + "_F");
+
+			if(columnNames.contains(name_column + "_S"))
+				columns.add(name_column + "_S");
+//			else
+//				nameColumns.add("NULL AS " + name_column + "_S");
 		} else
-			res.append(name_column + " ");
-		
+			columns.add(name_column);
 
+		if(columns.isEmpty())
+			throw new RuntimeException("No columns to select from " + concept.initialiser().init(INIT_TABLE));
+		
+		StringBuffer res = new StringBuffer(200);
+		res.append("SELECT ");
+
+		if(!columns.isEmpty())
+			res.append(this.join(", ", columns.toArray(new String[columns.size()]))).append(" ");
+		
 		res.append("FROM FIGIS.");
 		res.append(concept.initialiser().init(INIT_TABLE));
 		res.append(" WHERE ");
@@ -204,4 +261,18 @@ public class CodelistImporter {
 		return columns;
 	}
 
+	private String join(String separator, String... toJoin) {
+		notNull(separator, "Separator cannot be null");
+		
+		if(toJoin == null || toJoin.length == 0)
+			return "";
+		
+		StringBuilder result = new StringBuilder();
+		for(String part : toJoin)
+			result.append(part).append(separator);
+		
+		String asString = result.toString();
+		
+		return asString.substring(0, asString.lastIndexOf(separator));
+	}
 }
