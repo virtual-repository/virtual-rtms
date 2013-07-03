@@ -4,14 +4,11 @@ import static org.virtual.rtms.Constants.*;
 import static org.virtualrepository.Utils.*;
 
 import java.sql.Connection;
-import java.sql.Driver;
-import java.sql.DriverManager;
 import java.util.Properties;
 
-import javax.sql.PooledConnection;
+import javax.sql.DataSource;
 
-import oracle.jdbc.pool.OraclePooledConnection;
-
+import org.apache.commons.dbcp.BasicDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.virtual.rtms.metadata.RtmsMetadata;
@@ -23,9 +20,9 @@ public class RtmsConfiguration {
 	
 	public static final String ORACLE_JDBC_DRIVER = "oracle.jdbc.driver.OracleDriver";
 	
-	private final PooledConnection connectionsPool;
 	private final Properties properties;
 	private RtmsMetadata metadata;
+	private DataSource dataSource;
 	
 	public RtmsConfiguration(Properties properties) {
 		
@@ -33,15 +30,13 @@ public class RtmsConfiguration {
 		
 		validateStaticConfiguration(properties);
 		
-		//init pool
-		this.connectionsPool = newConnectionPool();
-		
+		this.dataSource = this.setupDataSource();
 	}
 	
 	public Connection connection() {
 		
 		try {
-			return connectionsPool.getConnection();
+			return this.dataSource.getConnection();
 		}
 		catch(Exception e) {
 			throw new RuntimeException("cannot connect to RTMS (see cause)",e);
@@ -78,27 +73,40 @@ public class RtmsConfiguration {
 		notNull(CONFIG_PWD, properties.getProperty(CONFIG_PWD));
 	}
 	
-	private PooledConnection newConnectionPool() {
+	/**
+	 * @return a basic data source (see commons-dbcp) that acts as a (configurable) connection pool. 
+	 * You probably want to change a few configuration parameters, though. These are proven to work fine. 
+	 */
+	public DataSource setupDataSource() {
 		
 		try {
 			
-			ClassLoader loader = Thread.currentThread().getContextClassLoader();
+			log.trace("loading JDBC driver: " + ORACLE_JDBC_DRIVER);
 			
-			log.trace("loading JDBC driver: " + ORACLE_JDBC_DRIVER + " using: " + loader);
+			BasicDataSource ds = new BasicDataSource();
+			ds.setDriverClassName(properties.getProperty(ORACLE_JDBC_DRIVER));
+			ds.setUrl(properties.getProperty(CONFIG_ENDPOINT));
+			ds.setUsername(properties.getProperty(CONFIG_USER));
+			ds.setPassword(properties.getProperty(CONFIG_PWD));
+			ds.setDefaultAutoCommit(false);
 			
-			Class<?> jdbcDriverClass = loader.loadClass(ORACLE_JDBC_DRIVER);
-			Driver driver = (Driver) jdbcDriverClass.newInstance();
-			DriverManager.registerDriver(driver);
+			ds.setMaxActive(50);
+			ds.setMaxIdle(50);
+			ds.setMaxWait(10000);
 			
-			return new OraclePooledConnection(properties.getProperty(CONFIG_ENDPOINT),
-														properties.getProperty(CONFIG_USER),
-														properties.getProperty(CONFIG_PWD));
+			ds.setTestWhileIdle(true);
+			ds.setTestOnBorrow(true);
+			ds.setTestOnReturn(false);
 			
-		} catch (Exception e) {
-			throw new RuntimeException("failed to initialise JDBC driver",e);
+			ds.setValidationQuery("SELECT 1 FROM DUAL");
+			ds.setRemoveAbandoned(true);
+			ds.setRemoveAbandonedTimeout(60 * 60);
+			
+			return ds;
+		} catch (Throwable t) {
+			throw new RuntimeException("failed to initialise JDBC driver", t);
 		}
 	}
-	
 	
 }
 
