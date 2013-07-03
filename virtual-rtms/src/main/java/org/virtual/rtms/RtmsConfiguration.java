@@ -91,6 +91,11 @@ public class RtmsConfiguration {
 		notNull(CONFIG_PWD, properties.getProperty(CONFIG_PWD));
 	}
 	
+	/* FFiorellato - added */
+	
+	/**
+	 * @return a basic data source (see commons-dbcp) that acts as a connection pool 
+	 */
 	public DataSource setupDataSource() {
 		try {
 			BasicDataSource ds = new BasicDataSource();
