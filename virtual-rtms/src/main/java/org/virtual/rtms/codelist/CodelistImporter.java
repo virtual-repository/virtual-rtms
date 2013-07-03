@@ -171,7 +171,8 @@ public class CodelistImporter {
 		List<String> columns = new ArrayList<String>();
 
 		for (RtmsAttribute attribute : attributes) {
-			columns.add(getAttributeColumn(attribute));
+			if(columnNames.contains(getAttributeColumn(attribute)))
+				columns.add(getAttributeColumn(attribute));
 		}
 
 		String name_column = name_attribute.initialiser().init(INIT_COLUMN);
