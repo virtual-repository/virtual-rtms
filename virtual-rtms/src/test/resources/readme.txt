@@ -1,0 +1,1 @@
+allows git sharing of otherwise empty folder. eliminate when first file is added.
