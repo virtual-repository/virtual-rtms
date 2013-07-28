@@ -17,9 +17,6 @@ public class BrowserIntegrationTests {
 		
 		repo.discover(CsvCodelist.type);
 		
-		for (Asset asset : repo) 
-			System.out.println(asset);
-		
 	}
 	
 	@Test
