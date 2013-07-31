@@ -123,6 +123,19 @@ public class CodelistImporter {
 			List<RtmsAttribute> attributes = singletonList(attribute);
 			//columns are currently based on name attribute
 			List<Column> columns = defineColumns(nameAttribute,attributes);
+
+			//Helps removing the assumption that the code column is always the first... 
+			int codeIndex = 0;
+			
+			for(Column current : columns) {
+				if(current.name().getLocalPart().equals(attribute.name()))
+					break;
+				else
+					codeIndex++;
+			}
+			
+			//Here, codeIndex will point to the column that has a name matching the code attribute for the asset
+			
 			LinkedList<Row> rows = new LinkedList<Row>();
 			
 			Connection connection = null;
@@ -145,8 +158,8 @@ public class CodelistImporter {
 				
 				while (rs.next()) {
 					Row row = nextRow(rs,columns);
-					//add it only if it has a code: assumes code is first column
-					if (row.get(columns.get(0))!=null)
+					//add it only if it has a code
+					if (row.get(columns.get(codeIndex))!=null)
 						rows.add(row);
 				}
 				
@@ -177,29 +190,34 @@ public class CodelistImporter {
 
 		String name_column = name_attribute.initialiser().init(INIT_COLUMN);
 		
-		if(!columnNames.contains(name_column + "_E")) 
-			if(columnNames.contains("NAME_E"))
+		if(!columnNames.contains(name_column + "_E"))
+			if(columnNames.contains("LONG_NAME_E") || columnNames.contains("LONG_NAME"))
+				name_column = "LONG_NAME";
+			else if(columnNames.contains("NAME_E") || columnNames.contains("NAME"))
 				name_column = "NAME";
-			else if(columnNames.contains("SHORT_NAME_E"))
+			else if(columnNames.contains("SHORT_NAME_E") || columnNames.contains("SHORT_NAME"))
 				name_column = "SHORT_NAME";
 			else
 				;//FAQ OFF!!!
 
-		if (name_attribute.properties().lookup(RTMS_ATTRIBUTE_CLASSNAME).value(String.class).equals(META_ATTR_NAME)){
-			if(columnNames.contains(name_column + "_E"))
+		if(name_attribute.properties().lookup(RTMS_ATTRIBUTE_CLASSNAME).value(String.class).equals(META_ATTR_NAME)){
+			if(columnNames.contains(name_column + "_E")) {
 				columns.add(name_column + "_E");
-//			else
-//				nameColumns.add("NULL AS " + name_column + "_E");
 
-			if(columnNames.contains(name_column + "_F"))
-				columns.add(name_column + "_F");
-//			else
-//				nameColumns.add("NULL AS " + name_column + "_F");
+				if(columnNames.contains(name_column + "_F"))
+					columns.add(name_column + "_F");
+				else 
+					columns.add("NULL AS " + name_column + "_F");
 
-			if(columnNames.contains(name_column + "_S"))
-				columns.add(name_column + "_S");
-//			else
-//				nameColumns.add("NULL AS " + name_column + "_S");
+				if(columnNames.contains(name_column + "_S"))
+					columns.add(name_column + "_S");
+				else 
+					columns.add("NULL AS " + name_column + "_S");
+			} else if(columnNames.contains(name_column)) {
+				columns.add(name_column + " AS " + name_column + "_E");
+				columns.add("NULL AS " + name_column + "_F");
+				columns.add("NULL AS " + name_column + "_S");
+			}
 		} else
 			columns.add(name_column);
 
@@ -232,13 +250,13 @@ public class CodelistImporter {
 	}
 	
 	private Row nextRow(ResultSet rs,List<Column> columns) throws Exception {
-		
 		Map<QName, String> data = new Hashtable<QName, String>(columns.size());
-		
-		for (int i = 0; i < columns.size(); i++)
+
+		for (int i = 0; i < columns.size(); i++) {
 			if (rs.getString(i+1)!=null)
 				data.put(columns.get(i).name(), rs.getString(i+1));
-
+		}
+		
 		Row row = new Row(data);
 		
 		return row;
