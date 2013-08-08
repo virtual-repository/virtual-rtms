@@ -8,8 +8,11 @@ public class Constants {
 	public static final String CONFIG_URL = "figis.url";
 	public static final String CONFIG_USER = "figis.user";
 	public static final String CONFIG_PWD = "figis.pwd";
-	public static final String CONFIG_NO_REFRESH = "figis.norefresh";
+
+	//This property provides the DB-specific validation query that DBCP will use to check that DB connections can be established
+	public static final String CONFIG_DB_VALIDATION_QUERY = "figis.validation.query";
 	
+	public static final String CONFIG_NO_REFRESH = "figis.norefresh";
 	
 	public static final String CONCEPTS_QUERY = "SELECT * FROM FIGIS.MD_REFOBJECT WHERE MD_REFOBJECT.ISMAJOR < 2  AND MD_REFOBJECT.ID > 0 ORDER BY MD_REFOBJECT.ID";
 	

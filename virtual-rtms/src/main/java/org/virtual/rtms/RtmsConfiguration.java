@@ -18,8 +18,6 @@ public class RtmsConfiguration {
 
 	private static Logger log = LoggerFactory.getLogger(RtmsConfiguration.class);
 	
-	public static final String ORACLE_JDBC_DRIVER = "oracle.jdbc.driver.OracleDriver";
-	
 	private final Properties properties;
 	private RtmsMetadata metadata;
 	private DataSource dataSource;
@@ -80,16 +78,20 @@ public class RtmsConfiguration {
 	public DataSource setupDataSource() {
 		
 		try {
-			
-			log.trace("loading JDBC driver: " + ORACLE_JDBC_DRIVER);
+			log.trace("Initializing DBCP data source with:");
+			log.trace(" # Driver class name ({}): {}", CONFIG_DRIVER, properties.getProperty(CONFIG_DRIVER));
+			log.trace(" # URL               ({}): {}", CONFIG_ENDPOINT, properties.getProperty(CONFIG_ENDPOINT));
+			log.trace(" # User name         ({}): {}", CONFIG_USER, properties.getProperty(CONFIG_USER));
+			log.trace(" # Password          ({}): {}", CONFIG_PWD, properties.getProperty(CONFIG_PWD));
+			log.trace(" # Validation query  ({}): {}", CONFIG_DB_VALIDATION_QUERY, properties.getProperty(CONFIG_DB_VALIDATION_QUERY));
 			
 			BasicDataSource ds = new BasicDataSource();
-			ds.setDriverClassName(properties.getProperty(ORACLE_JDBC_DRIVER));
+			ds.setDriverClassName(properties.getProperty(CONFIG_DRIVER));
 			ds.setUrl(properties.getProperty(CONFIG_ENDPOINT));
 			ds.setUsername(properties.getProperty(CONFIG_USER));
 			ds.setPassword(properties.getProperty(CONFIG_PWD));
 			ds.setDefaultAutoCommit(false);
-			
+				
 			ds.setMaxActive(50);
 			ds.setMaxIdle(50);
 			ds.setMaxWait(10000);
@@ -98,7 +100,8 @@ public class RtmsConfiguration {
 			ds.setTestOnBorrow(true);
 			ds.setTestOnReturn(false);
 			
-			ds.setValidationQuery("SELECT 1 FROM DUAL");
+			if(properties.getProperty(CONFIG_DB_VALIDATION_QUERY) != null)
+				ds.setValidationQuery(properties.getProperty(CONFIG_DB_VALIDATION_QUERY));
 			ds.setRemoveAbandoned(true);
 			ds.setRemoveAbandonedTimeout(60 * 60);
 			
