@@ -69,6 +69,9 @@ public class RtmsConfiguration {
 		notNull(CONFIG_URL, properties.getProperty(CONFIG_URL));
 		notNull(CONFIG_USER, properties.getProperty(CONFIG_USER));
 		notNull(CONFIG_PWD, properties.getProperty(CONFIG_PWD));
+		
+		//Should we assume that the DB VALIDATION QUERY can be optional?
+		//notNull(CONFIG_DB_VALIDATION_QUERY, properties.getProperty(CONFIG_DB_VALIDATION_QUERY));
 	}
 	
 	/**
