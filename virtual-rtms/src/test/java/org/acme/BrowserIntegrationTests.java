@@ -1,5 +1,8 @@
 package org.acme;
 
+
+import static org.junit.Assert.*;
+
 import org.junit.Test;
 import org.virtualrepository.Asset;
 import org.virtualrepository.VirtualRepository;
@@ -16,6 +19,18 @@ public class BrowserIntegrationTests {
 		VirtualRepository repo = new Repository();
 		
 		repo.discover(CsvCodelist.type);
+		
+	}
+	
+	@Test
+	public void prefersCsvCodelists() {
+		
+		VirtualRepository repo = new Repository();
+		
+		repo.discover(CsvCodelist.type,SdmxCodelist.type);
+		
+		for (Asset asset : repo)
+			assertEquals(CsvCodelist.type, asset.type());
 		
 	}
 	

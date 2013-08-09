@@ -31,11 +31,12 @@ public class Table2SdmxCodelist {
 	     
 	     Column codeColumn = table.columns().get(0);
 
+	     //knowledge of current tables for a minimal transform
 	     for (Row row : table) {
 
 	    	 CodeMutableBean code = new CodeMutableBeanImpl();
 	    
-	    	 code.setId(row.get(codeColumn));
+	    	 code.setId(adaptCode(row.get(codeColumn)));
 	   	     
 	    	 code.addName("en",row.get(RTMS_ATTRIBUTE_NAME_E));
 	    	 
@@ -50,5 +51,10 @@ public class Table2SdmxCodelist {
 	     
 	     return codelist.getImmutableInstance();
 		
+	}
+	
+	private String adaptCode(String code) {
+		//TODO add to this simple adaptation
+        return code.replace(".", "_");
 	}
 }

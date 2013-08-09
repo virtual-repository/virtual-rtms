@@ -36,21 +36,17 @@ public class RtmsBrowser implements Browser {
 		
 		RtmsMetadata metadata = configuration.metadata();
 		
-		for(AssetType type : types) {
-			
-			log.info(" discovering {}",SdmxCodelist.type);
-			
-			if (type==CsvCodelist.type)
-				return discoverCsvCodelists(metadata);
-			else
-				if (type==SdmxCodelist.type)
-					return discoverSdmxCodelists(metadata);
-				
-			throw new IllegalArgumentException("unsupported type "+type);
-			
-		}
+		//return tabular data as a preference to avoid an unsupervised mapping
+		if (types.contains(CsvCodelist.type))
+			return discoverCsvCodelists(metadata);
 		
-		throw new IllegalArgumentException("invoked with no types "); 
+		//coding cautiously below: VR should not pass us an unsupported type
+		
+		//if sdmx is all client takes.. 
+		if (types.contains((SdmxCodelist.type)))
+			return discoverSdmxCodelists(metadata);
+		
+		throw new IllegalArgumentException("unsupported types "+types);
 		
 	}
 
@@ -59,6 +55,8 @@ public class RtmsBrowser implements Browser {
 	
 	private List<CsvCodelist> discoverCsvCodelists(RtmsMetadata metadata) {
 	
+		log.info(" discovering {}",CsvCodelist.type);
+		
 		LinkedList<CsvCodelist> assets = new LinkedList<CsvCodelist>();
 		
 		for (RtmsConcept concept : metadata.concepts())
@@ -81,6 +79,8 @@ public class RtmsBrowser implements Browser {
 	
 	private List<SdmxCodelist> discoverSdmxCodelists(RtmsMetadata metadata) {
 		
+		log.info(" discovering {}",SdmxCodelist.type);
+
 		List<SdmxCodelist> assets = new ArrayList<SdmxCodelist>();
 		
 		for (RtmsConcept concept : metadata.concepts())

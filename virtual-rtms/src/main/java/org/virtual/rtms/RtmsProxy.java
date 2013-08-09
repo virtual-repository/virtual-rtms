@@ -48,7 +48,7 @@ public class RtmsProxy implements ServiceProxy, Lifecycle {
 
 		try {
 			configuration = new RtmsConfiguration(properties);
-			log.info("connecting to FIGIS database on {}",configuration.url());
+			log.info("connecting to FIGIS database @ {}",configuration.url());
 		}
 		catch(Exception e) {
 			throw new IllegalStateException("invalid configuration (see cause) ",e);	
@@ -56,9 +56,15 @@ public class RtmsProxy implements ServiceProxy, Lifecycle {
 
 
 		browser = new RtmsBrowser(configuration);
+		
+		//tabular importer
 		CsvCodelistImporter baseImporter = new CsvCodelistImporter(configuration);
 		importers.add(baseImporter);
+		
+		//derived stream importer
 		importers.add(adapt(baseImporter, new Table2CsvStream<CsvCodelist>()));
+		
+		//derived sdmx imported
 		importers.add(new SdmxCodelistImporter(configuration));
 
 	}

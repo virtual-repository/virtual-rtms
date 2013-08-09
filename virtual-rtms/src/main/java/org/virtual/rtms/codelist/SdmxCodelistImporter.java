@@ -31,6 +31,7 @@ public class SdmxCodelistImporter implements Importer<SdmxCodelist,CodelistBean>
 		Table table = codelistService.retrieveCodelistFrom(asset);
 		
 		Table2SdmxCodelist transform = new Table2SdmxCodelist();
+		
 		return transform.toSdmx(asset, table);
 		
 	}

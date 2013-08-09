@@ -163,7 +163,7 @@ public class CodelistImporter {
 						rows.add(row);
 				}
 				
-				log.info("retrieved asset {} in {} ms.",asset.id(),System.currentTimeMillis()-time);
+				log.info("retrieved asset {}({}) in {} ms.",asset.id(), asset.name(),System.currentTimeMillis()-time);
 				
 				return new DefaultTable(columns, rows);
 				
