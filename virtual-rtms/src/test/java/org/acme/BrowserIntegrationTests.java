@@ -20,6 +20,7 @@ public class BrowserIntegrationTests {
 		
 		repo.discover(CsvCodelist.type);
 		
+		repo.discover(CsvCodelist.type);
 	}
 	
 	@Test

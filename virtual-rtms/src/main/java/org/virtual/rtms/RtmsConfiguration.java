@@ -93,7 +93,6 @@ public class RtmsConfiguration {
 			ds.setUrl(properties.getProperty(CONFIG_ENDPOINT));
 			ds.setUsername(properties.getProperty(CONFIG_USER));
 			ds.setPassword(properties.getProperty(CONFIG_PWD));
-			ds.setDefaultAutoCommit(false);
 				
 			ds.setMaxActive(50);
 			ds.setMaxIdle(50);

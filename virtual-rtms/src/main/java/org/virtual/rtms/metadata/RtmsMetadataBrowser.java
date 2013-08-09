@@ -40,11 +40,14 @@ public class RtmsMetadataBrowser {
 		
 			connection =  configuration.connection();
 			
-			
 			Map<Integer, RtmsInitialiser> initiators = discoverInitiators(connection);
+			
+			discoverInitiators(connection);
+			
 			Map<Integer, RtmsConcept> concepts = discoverConcepts(connection,initiators);
 			
 			discoverAttributes(connection, concepts);
+			
 			postProcess(concepts);
 			clean(concepts);
 			
@@ -68,6 +71,9 @@ public class RtmsMetadataBrowser {
 		Map<Integer,RtmsConcept> concepts = new LinkedHashMap<Integer,RtmsConcept>();
 
 		Statement stmnt = connection.createStatement();
+		stmnt.setFetchDirection(ResultSet.FETCH_FORWARD);
+		stmnt.setFetchSize(100);
+		
 		ResultSet rs = stmnt.executeQuery(CONCEPTS_QUERY);
 		
 		while (rs.next()){
@@ -120,6 +126,8 @@ public class RtmsMetadataBrowser {
 	private void discoverAttributes(Connection connection, Map<Integer, RtmsConcept> concepts) throws Exception {
 		
 		Statement stmnt = connection.createStatement();
+		stmnt.setFetchSize(400);
+		stmnt.setFetchDirection(ResultSet.FETCH_FORWARD);
 		ResultSet rs = stmnt.executeQuery(ATTRIBUTES_QUERY);
 		
 		while (rs.next()){
@@ -163,6 +171,8 @@ public class RtmsMetadataBrowser {
 		Map<Integer,RtmsInitialiser> classInits = new LinkedHashMap<Integer,RtmsInitialiser>();
 		
 		Statement stmnt = connection.createStatement();
+		stmnt.setFetchSize(300);
+		stmnt.setFetchDirection(ResultSet.FETCH_FORWARD);
 		ResultSet rs = stmnt.executeQuery(CLASSINIT_QUERY);
 		
 		while (rs.next())
