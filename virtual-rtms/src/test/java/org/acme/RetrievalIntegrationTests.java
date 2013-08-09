@@ -1,5 +1,7 @@
 package org.acme;
 
+import static org.junit.Assert.*;
+
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -25,7 +27,7 @@ public class RetrievalIntegrationTests {
 
 	
 	@Test
-	public void retrieveTableCodelist() {
+	public void retrieveFirstTableCodelist() {
 		
 		VirtualRepository repo = new Repository();
 		
@@ -44,6 +46,38 @@ public class RetrievalIntegrationTests {
 	}
 	
 	@Test
+	public void retrieveNamedCodelist() {
+	
+		String name = "FIRMS Data Collection - Code";
+		
+		VirtualRepository repo = new Repository();
+		
+		repo.discover(CsvCodelist.type);
+		
+		for (Asset a : repo)
+			if (a.name().equals(name)) {
+				System.out.println(repo.retrieve(a, Table.class));
+				return;
+			}
+		
+		fail("unknown codelist");
+	}
+	
+	@Test
+	public void retrieveCodelistbyId() {
+	
+		String id = "rtms-263000-12";
+		
+		VirtualRepository repo = new Repository();
+		
+		repo.discover(CsvCodelist.type);
+		
+		Asset asset  = repo.lookup(id);
+		System.out.println(repo.retrieve(asset, Table.class));
+		
+	}
+	
+	@Test
 	public void retrieveAllTableCodelist() {
 		
 		VirtualRepository repo = new Repository();
@@ -53,6 +87,8 @@ public class RetrievalIntegrationTests {
 		repo.discover(CsvCodelist.type);
 		
 		discoveryTime=System.currentTimeMillis()-discoveryTime;
+		
+		System.out.println(discoveryTime);
 		
 		List<String> slow = new ArrayList<String>();
 		List<String> good = new ArrayList<String>();
@@ -65,7 +101,7 @@ public class RetrievalIntegrationTests {
 		int max=100;
 		for (Asset asset : repo) {
 			
-			if (count==max)
+			if (count>max)
 				break;
 			
 			try {
@@ -104,11 +140,11 @@ public class RetrievalIntegrationTests {
 		
 		System.out.println("retrieved "+count);
 		System.out.println("discovered in "+discoveryTime);
-		System.out.println(good.size()+" readable codelists "+good);
-		System.out.println(empties.size()+" empty codelists "+empties);
-		System.out.println(failures.size()+" unreadable codelists "+failures);
-		System.out.println(undescribed.size()+" undescribed codelists "+undescribed);
-		System.out.println(slow.size()+" slow codelists "+slow);
+		System.out.println(good.size()+" readable codelists: ");
+		System.out.println(empties.size()+" empty codelists: "+empties);
+		System.out.println(failures.size()+" unreadable codelists: "+failures);
+		System.out.println(undescribed.size()+" undescribed codelists: "+undescribed);
+		System.out.println(slow.size()+" slow codelists (>3sec)"+slow);
 		System.out.println("average retrieval time:"+duration/count);
 	}
 	
