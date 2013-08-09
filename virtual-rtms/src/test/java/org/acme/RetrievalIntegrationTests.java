@@ -97,11 +97,11 @@ public class RetrievalIntegrationTests {
 		List<String> undescribed = new ArrayList<String>();
 		
 		long duration=0;
-		int count=0;
-		int max=100;
+		int count=1;
+		int max=5;
 		for (Asset asset : repo) {
 			
-			if (count>max)
+			if (count>=max)
 				break;
 			
 			try {
@@ -146,24 +146,6 @@ public class RetrievalIntegrationTests {
 		System.out.println(undescribed.size()+" undescribed codelists: "+undescribed);
 		System.out.println(slow.size()+" slow codelists (>3sec)"+slow);
 		System.out.println("average retrieval time:"+duration/count);
-	}
-	
-	@Test
-	public void retrieveAllTableCodelists() throws Exception	{
-		
-		VirtualRepository repo = new Repository();
-		
-		repo.discover(CsvCodelist.type);
-		
-		int counter = 0;
-		
-		for (Asset asset : repo) {
-			System.out.println("loading asset "+asset.id());
-			repo.retrieve(asset,Table.class);
-			System.out.println("loaded table n."+counter);
-			counter++;
-			
-		}
 	}
 	
 	@Test
