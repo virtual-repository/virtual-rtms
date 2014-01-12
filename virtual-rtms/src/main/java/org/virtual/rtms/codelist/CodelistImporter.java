@@ -22,7 +22,6 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Hashtable;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -136,7 +135,7 @@ public class CodelistImporter {
 			
 			//Here, codeIndex will point to the column that has a name matching the code attribute for the asset
 			
-			LinkedList<Row> rows = new LinkedList<Row>();
+			ArrayList<Row> rows = new ArrayList<Row>();
 			
 			Connection connection = null;
 			Statement stmnt = null;
@@ -264,7 +263,7 @@ public class CodelistImporter {
 	
 	private List<Column> defineColumns(RtmsAttribute nameAttribute, List<RtmsAttribute> attributes){
 		
-		List<Column> columns = new LinkedList<Column>();
+		List<Column> columns = new ArrayList<Column>();
 		
 		for (RtmsAttribute attribute : attributes)
 			columns.add(new Column(attribute.name()));
