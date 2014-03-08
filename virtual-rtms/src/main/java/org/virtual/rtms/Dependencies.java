@@ -15,7 +15,7 @@ import dagger.Provides;
 /**
  * Dependencies provided to Dagger for injection.
  */
-@Module(injects = RtmsProxy.class)
+@Module(library=true)
 public class Dependencies {
 
 	public static final Dependencies instance = new Dependencies();

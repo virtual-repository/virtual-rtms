@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
-import javax.xml.bind.annotation.XmlElementRef;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,14 +19,15 @@ import org.virtualrepository.spi.Lifecycle;
 import org.virtualrepository.spi.Publisher;
 import org.virtualrepository.spi.ServiceProxy;
 
-import dagger.ObjectGraph;
 
-
-
+/**
+ * Configures and provides access components.
+ *  
+ * @author Fabio Simeoni
+ *
+ */
 public class RtmsProxy implements ServiceProxy, Lifecycle {
 
-	@XmlElementRef
-	private Object f;
 	
 	private static Logger log = LoggerFactory.getLogger(RtmsBrowser.class);
 
@@ -48,8 +48,6 @@ public class RtmsProxy implements ServiceProxy, Lifecycle {
 
 	@Override
 	public void init() throws Exception {
-
-		ObjectGraph.create(Dependencies.instance).inject(this);
 
 		log.info("connecting to rtms @ {}",configuration.url());
 

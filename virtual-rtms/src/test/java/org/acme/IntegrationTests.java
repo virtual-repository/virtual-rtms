@@ -27,10 +27,10 @@ import org.sdmxsource.sdmx.sdmxbeans.model.SdmxStructureFormat;
 import org.sdmxsource.sdmx.util.beans.container.SdmxBeansImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.virtual.rtms.Dependencies;
 import org.virtual.rtms.Rtms;
 import org.virtual.rtms.RtmsBrowser;
 import org.virtual.rtms.RtmsConnection;
+import org.virtual.rtms.RtmsPlugin;
 import org.virtual.rtms.codelist.CodelistImporter;
 import org.virtual.rtms.model.Codelist;
 import org.virtualrepository.Asset;
@@ -43,7 +43,7 @@ import org.virtualrepository.tabular.Table;
 
 import dagger.Module;
 
-@Module(injects = IntegrationTests.class, includes = Dependencies.class)
+@Module(injects = IntegrationTests.class, includes = RtmsPlugin.class)
 public class IntegrationTests {
 
 	private static Logger log;
