@@ -91,7 +91,7 @@ public class IntegrationTests {
 			log.info("test found {} codelists", result.size());
 
 			for (Codelist list : result)
-				System.out.println(list);
+				log.debug(list.toString());
 		}
 	}
 
@@ -103,7 +103,7 @@ public class IntegrationTests {
 		repo.discover(CsvCodelist.type);
 
 		for (Asset asset : repo)
-			System.out.println(asset);
+			log.debug(asset.toString());
 
 	}
 
@@ -127,7 +127,7 @@ public class IntegrationTests {
 		repo.discover(SdmxCodelist.type);
 
 		for (Asset asset : repo)
-			System.out.println(asset);
+			log.debug(asset.toString());
 
 	}
 
@@ -146,6 +146,7 @@ public class IntegrationTests {
 
 		for (Row row : table)
 			log.debug(row.toString());
+		
 	}
 
 	@Test
@@ -155,8 +156,12 @@ public class IntegrationTests {
 
 		repo.discover(CsvCodelist.type);
 
-		Table table = repo.retrieve(repo.iterator().next(),Table.class);
+		Asset list = repo.iterator().next();
+		
+		Table table = repo.retrieve(list,Table.class);
 
+		log.debug(list.toString());
+		
 		for (Row row : table)
 			log.debug(row.toString());
 	}
@@ -209,7 +214,7 @@ public class IntegrationTests {
 			}
 		}
 
-		System.out.println(empties.size() + " empties\n:" + empties);
+		log.debug(empties.size() + " empties\n:" + empties);
 
 		assertEquals(errors.toString(), 0, errors.size());
 	}
@@ -220,7 +225,7 @@ public class IntegrationTests {
 		inject(this);
 
 		for (Asset list : browser.discover(Arrays.asList(SdmxCodelist.type)))
-			System.out.println(list);
+			log.debug(list.toString());
 
 	}
 

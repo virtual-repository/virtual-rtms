@@ -5,6 +5,7 @@ import javax.inject.Inject;
 import org.virtualrepository.csv.CsvCodelist;
 import org.virtualrepository.impl.Type;
 import org.virtualrepository.spi.Importer;
+import org.virtualrepository.tabular.Column;
 import org.virtualrepository.tabular.Table;
 
 public class CsvCodelistImporter implements Importer<CsvCodelist, Table> {
@@ -29,7 +30,12 @@ public class CsvCodelistImporter implements Importer<CsvCodelist, Table> {
 
 	@Override
 	public Table retrieve(CsvCodelist asset) throws Exception {
-		return importer.retrieve(asset);
+		
+		Table table = importer.retrieve(asset); 
+		
+		asset.setColumns(table.columns().toArray(new Column[0]));
+		
+		return table;
 	}
 
 }

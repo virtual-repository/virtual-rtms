@@ -12,6 +12,9 @@ import org.apache.commons.dbcp.BasicDataSource;
 import dagger.Module;
 import dagger.Provides;
 
+/**
+ * Dependencies provided to Dagger for injection.
+ */
 @Module(injects = RtmsProxy.class)
 public class Dependencies {
 

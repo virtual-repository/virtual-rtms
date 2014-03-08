@@ -32,6 +32,8 @@ import org.virtualrepository.tabular.Table;
 /**
  * Single point of integration with repository.
  * 
+ * The real work at read-time takes place here.
+ * 
  */
 public class RtmsConnection implements AutoCloseable {
 
