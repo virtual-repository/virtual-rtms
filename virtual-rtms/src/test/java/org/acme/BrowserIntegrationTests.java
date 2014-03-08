@@ -11,7 +11,6 @@ import org.virtualrepository.impl.Repository;
 import org.virtualrepository.sdmx.SdmxCodelist;
 
 public class BrowserIntegrationTests {
-
 	
 	@Test
 	public void discoverCsvCodelists() {

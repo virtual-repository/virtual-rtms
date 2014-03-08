@@ -1,7 +1,5 @@
 package org.virtual.rtms.codelist;
 
-import static org.virtual.rtms.Constants.*;
-
 import org.sdmxsource.sdmx.api.model.beans.codelist.CodelistBean;
 import org.sdmxsource.sdmx.api.model.mutable.codelist.CodeMutableBean;
 import org.sdmxsource.sdmx.api.model.mutable.codelist.CodelistMutableBean;
@@ -38,19 +36,44 @@ public class Table2SdmxCodelist {
 	    
 	    	 code.setId(adaptCode(row.get(codeColumn)));
 	   	     
-	    	 code.addName("en",row.get(RTMS_ATTRIBUTE_NAME_E));
+	    	 String name = name(row,"E");
+
+	    	 if (name==null)
+	    		 continue;
 	    	 
-	    	 if (row.get(RTMS_ATTRIBUTE_NAME_E)!=null)
-	    		 code.addName("fr",row.get(row.get(RTMS_ATTRIBUTE_NAME_E)));
+	    	 code.addName("en",name);
 	    	 
-	    	 if (row.get(RTMS_ATTRIBUTE_NAME_S)!=null)
-	    		 code.addName("es",row.get(row.get(RTMS_ATTRIBUTE_NAME_S)));
+	    	 name = name(row,"F");
+	    	 
+	    	 if (name!=null)
+	    		 code.addName("fr",name);
+	    	 
+	    	 name = name(row,"S");
+	    	 
+	    	 if (name!=null)
+	    		 code.addName("es",name);
 
 	     }
 	      
 	     
 	     return codelist.getImmutableInstance();
 		
+	}
+	
+	private static String name_format = "%s_$s";
+	
+	private String name(Row row,String suffix) {
+		
+		String name = row.get(String.format(name_format,"NAME",suffix));
+		
+		if (name==null)
+			name = row.get(String.format(name_format,"SHORT_NAME",suffix));
+		
+		if (name==null)
+			name = row.get(String.format(name_format,"LONG_NAME",suffix));
+		
+		return name;
+
 	}
 	
 	private String adaptCode(String code) {

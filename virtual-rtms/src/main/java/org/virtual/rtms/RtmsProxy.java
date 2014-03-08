@@ -4,7 +4,9 @@ import static org.virtualrepository.spi.ImportAdapter.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
+
+import javax.inject.Inject;
+import javax.xml.bind.annotation.XmlElementRef;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,57 +20,47 @@ import org.virtualrepository.spi.Lifecycle;
 import org.virtualrepository.spi.Publisher;
 import org.virtualrepository.spi.ServiceProxy;
 
+import dagger.ObjectGraph;
+
 
 
 public class RtmsProxy implements ServiceProxy, Lifecycle {
 
+	@XmlElementRef
+	private Object f;
 	
+	private static Logger log = LoggerFactory.getLogger(RtmsBrowser.class);
 
-	Logger log = LoggerFactory.getLogger(RtmsBrowser.class);
-
-	private static final String CONFIGURATION_FILE = "rtms.properties";
-
-	private RtmsBrowser browser;
+	@Inject
+	Configuration configuration;
+	
+	@Inject
+	RtmsBrowser browser;
+	
+	@Inject
+	CsvCodelistImporter csvImporter;
+	
+	@Inject
+	SdmxCodelistImporter sdmxImporter;
+	
 	private final List<Publisher<?,?>> publishers = new ArrayList<Publisher<?,?>>();
 	private final List<Importer<?,?>> importers = new ArrayList<Importer<?,?>>();
-
-	private static RtmsConfiguration configuration = null;
 
 	@Override
 	public void init() throws Exception {
 
-		Properties properties = new Properties();	
+		ObjectGraph.create(Dependencies.instance).inject(this);
 
-		try {
-			properties.load(RtmsProxy.class.getClassLoader().getResourceAsStream(CONFIGURATION_FILE));
-		}
-		catch(Exception e) {
-			throw new IllegalStateException("missing configuration: configuration file " + CONFIGURATION_FILE+" not on classpath");
-		}
+		log.info("connecting to rtms @ {}",configuration.url());
 
-		try {
-			configuration = new RtmsConfiguration(properties);
-			log.info("connecting to FIGIS database @ {}",configuration.url());
-		}
-		catch(Exception e) {
-			throw new IllegalStateException("invalid configuration (see cause) ",e);	
-		}
+		importers.add(csvImporter);
+		importers.add(sdmxImporter);
 
-
-		browser = new RtmsBrowser(configuration);
-		
-		//tabular importer
-		CsvCodelistImporter baseImporter = new CsvCodelistImporter(configuration);
-		importers.add(baseImporter);
-		
 		//derived stream importer
-		importers.add(adapt(baseImporter, new Table2CsvStream<CsvCodelist>()));
-		
-		//derived sdmx imported
-		importers.add(new SdmxCodelistImporter(configuration));
+		importers.add(adapt(csvImporter, new Table2CsvStream<CsvCodelist>()));
 
 	}
-
+	
 	@Override
 	public Browser browser() {
 		return browser;

@@ -1,6 +1,7 @@
 package org.virtual.rtms.codelist;
 
-import org.virtual.rtms.RtmsConfiguration;
+import javax.inject.Inject;
+
 import org.virtualrepository.csv.CsvCodelist;
 import org.virtualrepository.impl.Type;
 import org.virtualrepository.spi.Importer;
@@ -8,11 +9,12 @@ import org.virtualrepository.tabular.Table;
 
 public class CsvCodelistImporter implements Importer<CsvCodelist, Table> {
 
-	CodelistImporter codelistService;
+	CodelistImporter importer;
 	
 	
-	public CsvCodelistImporter(RtmsConfiguration configuration) throws Exception  {
-		codelistService = new CodelistImporter(configuration);
+	@Inject
+	public CsvCodelistImporter(CodelistImporter importer)  {
+		this.importer = importer;
 	}
 	
 	@Override
@@ -27,7 +29,7 @@ public class CsvCodelistImporter implements Importer<CsvCodelist, Table> {
 
 	@Override
 	public Table retrieve(CsvCodelist asset) throws Exception {
-		return codelistService.retrieveCodelistFrom(asset);
+		return importer.retrieve(asset);
 	}
 
 }

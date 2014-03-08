@@ -1,101 +1,118 @@
 package org.virtual.rtms;
 
-import static org.virtual.rtms.Constants.*;
+import static java.lang.System.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.virtual.rtms.metadata.RtmsAttribute;
-import org.virtual.rtms.metadata.RtmsConcept;
-import org.virtual.rtms.metadata.RtmsMetadata;
+import org.virtual.rtms.model.Codelist;
 import org.virtualrepository.AssetType;
-import org.virtualrepository.Property;
 import org.virtualrepository.csv.CsvCodelist;
 import org.virtualrepository.sdmx.SdmxCodelist;
 import org.virtualrepository.spi.Browser;
 import org.virtualrepository.spi.MutableAsset;
 
+@Singleton
 public class RtmsBrowser implements Browser {
 
-	private final RtmsConfiguration configuration;
-
 	private static Logger log = LoggerFactory.getLogger(RtmsBrowser.class);
+
 	
-	public RtmsBrowser(RtmsConfiguration configuration) throws Exception {
+	private final Rtms rtms;
+	private final Configuration configuration;
+	
+	private Collection<Codelist> cached;
+	
+	
+	@Inject
+	public RtmsBrowser(Rtms rtms, Configuration configuration) {
+		this.rtms = rtms;
 		this.configuration = configuration;
 	}
 	
 	@Override
 	public Iterable<? extends MutableAsset> discover(Collection<? extends AssetType> types) throws Exception {
 
-		configuration.refresh();
+		Iterable<Codelist> codelists = discover();
 		
-		RtmsMetadata metadata = configuration.metadata();
-		
-		//return tabular data as a preference to avoid an unsupervised mapping
 		if (types.contains(CsvCodelist.type))
-			return discoverCsvCodelists(metadata);
+			return toCsvAssets(codelists);
 		
-		//coding cautiously below: VR should not pass us an unsupported type
-		
-		//if sdmx is all client takes.. 
 		if (types.contains((SdmxCodelist.type)))
-			return discoverSdmxCodelists(metadata);
+			return toSdmxAssets(codelists);
 		
 		throw new IllegalArgumentException("unsupported types "+types);
 		
 	}
 
 	
-	
-	
-	private List<CsvCodelist> discoverCsvCodelists(RtmsMetadata metadata) {
-	
-		log.info(" discovering {}",CsvCodelist.type);
 		
-		LinkedList<CsvCodelist> assets = new LinkedList<CsvCodelist>();
+	private Iterable<CsvCodelist> toCsvAssets(Iterable<Codelist> codelists) {
+	
+		log.info("discovering {}",CsvCodelist.type);
 		
-		for (RtmsConcept concept : metadata.concepts())
-			for (RtmsAttribute attribute : concept.codeAttributes()) {
-				Property conceptId = concept.properties().lookup(RTMS_CONCEPT_ID);
-				Property attributeId = attribute.properties().lookup(RTMS_ATTRIBUTE_ID);
-				String assetId = "rtms-" + conceptId.value() + "-" + attributeId.value();
-				String assetName = concept.name() + " - " + attribute.name();
-				CsvCodelist asset = new CsvCodelist(assetId, assetName,0);
-				asset.properties().add(conceptId);
-				asset.properties().add(attributeId);
-				
-				assets.add(asset);
-			}
+		List<CsvCodelist> assets = new ArrayList<CsvCodelist>();
+		
+		for (Codelist codelist : codelists)
+			assets.add(codelist.toCsvAsset());
 		
 		return assets;
-		
+	
 	}
 	
 	
-	private List<SdmxCodelist> discoverSdmxCodelists(RtmsMetadata metadata) {
+	private List<SdmxCodelist> toSdmxAssets(Iterable<Codelist> codelists) {
 		
 		log.info(" discovering {}",SdmxCodelist.type);
 
 		List<SdmxCodelist> assets = new ArrayList<SdmxCodelist>();
 		
-		for (RtmsConcept concept : metadata.concepts())
-			for (RtmsAttribute attribute : concept.codeAttributes()) {
-				Property conceptId = concept.properties().lookup(RTMS_CONCEPT_ID);
-				Property attributeId = attribute.properties().lookup(RTMS_ATTRIBUTE_ID);
-				String assetId = "rtms-" + conceptId.value() + "-" + attributeId.value();
-				String assetName = concept.name() + " - " + attribute.name();
-				SdmxCodelist asset = new SdmxCodelist(assetId+"-sdmx", assetId, "1.0",assetName);
-				asset.properties().add(conceptId);
-				asset.properties().add(attributeId);
-				
-				assets.add(asset);
-			}
+		for (Codelist codelist : codelists)
+			assets.add(codelist.toSdmxAsset());
 		
 		return assets;
 	}
+	
+
+	private Iterable<Codelist> discover() {
+
+		// we've done it once and do not need to do it again
+		if (cached != null && configuration.noRefresh())
+			return cached;
+		
+		
+		log.info("discovering rtms codelists...");
+
+		try (
+
+			RtmsConnection conn = rtms.connect()
+
+		)
+
+		{
+
+			long time = currentTimeMillis();
+
+			cached = conn.codelists();
+
+			log.info("found {} codelists in rtms in {} ms.", cached.size(), currentTimeMillis() - time);
+			
+			return cached;
+
+		}
+
+		catch (Exception e) {
+
+			throw new RuntimeException("cannot discover rtms codelists (see cause)", e);
+		}
+	}
+
+	
+
 }
