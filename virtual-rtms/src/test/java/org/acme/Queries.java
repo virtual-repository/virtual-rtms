@@ -138,7 +138,7 @@ public class Queries {
 		
 		inject(this);
 		
-		String query =  "select * from FIGIS.REF_GEAR_TYPE order by ISSCFG_CODE";
+		String query =  "select * from FIGIS.FIC_CATCH_AREA  order by FIC_SYS_CATCH_AREA";
 		
 		sample(query);
 

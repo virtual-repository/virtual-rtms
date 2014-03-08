@@ -5,6 +5,7 @@ import static java.util.Arrays.*;
 import static org.acme.Utils.*;
 import static org.junit.Assert.*;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -17,6 +18,13 @@ import javax.inject.Inject;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.sdmx.SdmxServiceFactory;
+import org.sdmxsource.sdmx.api.constants.STRUCTURE_OUTPUT_FORMAT;
+import org.sdmxsource.sdmx.api.manager.output.StructureWriterManager;
+import org.sdmxsource.sdmx.api.model.beans.SdmxBeans;
+import org.sdmxsource.sdmx.api.model.beans.codelist.CodelistBean;
+import org.sdmxsource.sdmx.sdmxbeans.model.SdmxStructureFormat;
+import org.sdmxsource.sdmx.util.beans.container.SdmxBeansImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.virtual.rtms.Dependencies;
@@ -26,137 +34,195 @@ import org.virtual.rtms.RtmsConnection;
 import org.virtual.rtms.codelist.CodelistImporter;
 import org.virtual.rtms.model.Codelist;
 import org.virtualrepository.Asset;
+import org.virtualrepository.VirtualRepository;
 import org.virtualrepository.csv.CsvCodelist;
+import org.virtualrepository.impl.Repository;
 import org.virtualrepository.sdmx.SdmxCodelist;
 import org.virtualrepository.tabular.Row;
 import org.virtualrepository.tabular.Table;
 
 import dagger.Module;
 
-@Module(injects=IntegrationTests.class, includes=Dependencies.class)
+@Module(injects = IntegrationTests.class, includes = Dependencies.class)
 public class IntegrationTests {
 
 	private static Logger log;
-	
+
 	@Inject
 	Rtms rtms;
-	
+
 	@Inject
 	RtmsBrowser browser;
-	
+
 	@Inject
 	CodelistImporter importer;
-	
+
 	@BeforeClass
 	public static void setup() {
-		
+
 		setProperty("org.slf4j.simpleLogger.defaultLogLevel", "trace");
+		setProperty("org.slf4j.simpleLogger.log.org.springframework", "warn");
 		log = LoggerFactory.getLogger("test");
-		
+
 	}
-	
+
 	@Test
 	public void connects() throws Exception {
-	
+
 		inject(this);
-		
-		try (
-			RtmsConnection c = rtms.connect()
-		)
-		{}
+
+		try (RtmsConnection c = rtms.connect()) {
+		}
 	}
-	
+
 	@Test
 	public void findsCodelists() throws Exception {
-	
+
 		inject(this);
-		
+
 		try (
-			
-			RtmsConnection c = rtms.connect()
-		
-		)
-		{
-			
+
+		RtmsConnection c = rtms.connect()
+
+		) {
+
 			Collection<Codelist> result = c.codelists();
-			
-			log.info("test found {} codelists",result.size());
+
+			log.info("test found {} codelists", result.size());
 
 			for (Codelist list : result)
 				System.out.println(list);
 		}
 	}
-	
-	
+
 	@Test
-	public void browseCsvCodelists() throws Exception {
-	
-		inject(this);
-		
-		for (Asset list: browser.discover(asList(CsvCodelist.type)))
-				System.out.println(list);
-		
+	public void discoverCsvCodelists() {
+
+		VirtualRepository repo = new Repository();
+
+		repo.discover(CsvCodelist.type);
+
+		for (Asset asset : repo)
+			System.out.println(asset);
+
 	}
-	
+
+	@Test
+	public void prefersCsvCodelists() {
+
+		VirtualRepository repo = new Repository();
+
+		repo.discover(CsvCodelist.type, SdmxCodelist.type);
+
+		for (Asset asset : repo)
+			assertEquals(CsvCodelist.type, asset.type());
+
+	}
+
+	@Test
+	public void discoverSdmxCodelists() {
+
+		VirtualRepository repo = new Repository();
+
+		repo.discover(SdmxCodelist.type);
+
+		for (Asset asset : repo)
+			System.out.println(asset);
+
+	}
+
 	@Test
 	public void retrieveFirstCodelist() throws Exception {
-	
+
 		inject(this);
-		
+
 		Iterable<? extends Asset> codelists = browser.discover(asList(CsvCodelist.type));
-		
+
 		Iterator<? extends Asset> it = codelists.iterator();
-		
-		it.next();
-		
+
 		Asset codelist = it.next();
-		
+
 		Table table = importer.retrieve(codelist);
-	
+
 		for (Row row : table)
-			System.out.println(row);
+			log.debug(row.toString());
+	}
+
+	@Test
+	public void retrieveFirstCodelistAsCsv() throws Exception {
+
+		VirtualRepository repo = new Repository();
+
+		repo.discover(CsvCodelist.type);
+
+		Table table = repo.retrieve(repo.iterator().next(),Table.class);
+
+		for (Row row : table)
+			log.debug(row.toString());
 	}
 	
+	@Test
+	public void retrieveFirstCodelistAsSdmx() throws Exception {
+		
+		VirtualRepository repo = new Repository();
+
+		repo.discover(SdmxCodelist.type);
+
+		StructureWriterManager manager = SdmxServiceFactory.writer();
+
+		CodelistBean bean = repo.retrieve(repo.iterator().next(),CodelistBean.class);
+		
+		SdmxBeans beans = new SdmxBeansImpl(bean);
+		
+		ByteArrayOutputStream stream = new ByteArrayOutputStream(1024);
+		
+		STRUCTURE_OUTPUT_FORMAT format = STRUCTURE_OUTPUT_FORMAT.SDMX_V21_STRUCTURE_DOCUMENT;
+		
+		manager.writeStructures(beans, new SdmxStructureFormat(format), stream);
+		
+		log.debug(stream.toString());
+
+	}
 
 	@Test
 	public void retrieveAllCodelists() throws Exception {
-	
+
 		inject(this);
-		
+
 		Iterable<? extends Asset> codelists = browser.discover(asList(CsvCodelist.type));
-		
+
 		Iterator<? extends Asset> it = codelists.iterator();
-		
+
 		List<String> empties = new ArrayList<>();
-		Map<String,String> errors = new HashMap<>();
-		
+		Map<String, String> errors = new HashMap<>();
+
 		while (it.hasNext()) {
 			Asset asset = it.next();
 			try {
 				Table table = importer.retrieve(asset);
-				
+
 				if (!table.iterator().hasNext())
 					empties.add(asset.id());
-				
-			}
-			catch(Exception e) {
-				errors.put(asset.id(),e.getMessage());
+
+			} catch (Exception e) {
+				errors.put(asset.id(), e.getMessage());
 			}
 		}
-		
-		System.out.println(empties.size()+" empties\n:"+empties);
-		
-		assertEquals(errors.toString(),0,errors.size());
+
+		System.out.println(empties.size() + " empties\n:" + empties);
+
+		assertEquals(errors.toString(), 0, errors.size());
 	}
-	
+
 	@Test
 	public void browseSdmxCodelists() throws Exception {
-	
+
 		inject(this);
-		
-		for (Asset list: browser.discover(Arrays.asList(SdmxCodelist.type)))
-				System.out.println(list);
-		
+
+		for (Asset list : browser.discover(Arrays.asList(SdmxCodelist.type)))
+			System.out.println(list);
+
 	}
+
 
 }

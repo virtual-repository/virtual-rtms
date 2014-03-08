@@ -1,5 +1,7 @@
 package org.virtual.rtms.codelist;
 
+import static java.lang.String.*;
+
 import org.sdmxsource.sdmx.api.model.beans.codelist.CodelistBean;
 import org.sdmxsource.sdmx.api.model.mutable.codelist.CodeMutableBean;
 import org.sdmxsource.sdmx.api.model.mutable.codelist.CodelistMutableBean;
@@ -53,24 +55,26 @@ public class Table2SdmxCodelist {
 	    	 if (name!=null)
 	    		 code.addName("es",name);
 
+	    	 codelist.addItem(code);
 	     }
+	     
 	      
 	     
 	     return codelist.getImmutableInstance();
 		
 	}
 	
-	private static String name_format = "%s_$s";
+	private static String name_format = "%s_%s";
 	
 	private String name(Row row,String suffix) {
 		
-		String name = row.get(String.format(name_format,"NAME",suffix));
+		String name = row.get(format(name_format,"NAME",suffix));
 		
-		if (name==null)
-			name = row.get(String.format(name_format,"SHORT_NAME",suffix));
-		
-		if (name==null)
-			name = row.get(String.format(name_format,"LONG_NAME",suffix));
+		if (name==null) {
+			name = row.get(format(name_format,"SHORT_NAME",suffix));
+			if (name==null)
+				name = row.get(format(name_format,"LONG_NAME",suffix));
+		}
 		
 		return name;
 

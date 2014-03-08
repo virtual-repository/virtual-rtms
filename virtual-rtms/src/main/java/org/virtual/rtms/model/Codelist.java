@@ -44,7 +44,7 @@ public class Codelist extends Entity {
 	
 	public SdmxCodelist toSdmxAsset() {
 
-		return new SdmxCodelist(id()+ "-sdmx", id(), "unknown", name(), properties().toArray());
+		return new SdmxCodelist(id()+ "-sdmx", id(), "unknown", id(), properties().toArray());
 
 	}
 
@@ -60,6 +60,6 @@ public class Codelist extends Entity {
 	}
 	
 	private static String compose(String id1, String id2) {
-		return format("rtms-%s:%s", id1, id2);
+		return format("rtms-%s-%s", id1, id2);
 	}
 }

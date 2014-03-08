@@ -333,7 +333,7 @@ public class RtmsConnection implements AutoCloseable {
 			String name = metadata.getColumnName(i);
 			
 			//do not add code twice, and exclude meta column if any
-			if (!code.equals(name) && meta!=null && !meta.equals(name)) 
+			if (!code.equals(name) && (meta==null || !meta.equals(name))) 
 				columns.add(new Column(name));
 		}
 		
