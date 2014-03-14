@@ -61,7 +61,7 @@ public class BasePublisher {
 
 	private File toTmpFile(String name, String suffix, InputStream stream) throws Exception {
 
-		File file = File.createTempFile(name + "-", ".upload");
+		File file = File.createTempFile(name.replace(" ","_") + "-", "."+suffix);
 
 		try (InputStream is = stream) {
 

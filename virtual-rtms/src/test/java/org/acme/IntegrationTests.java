@@ -4,7 +4,6 @@ import static java.lang.System.*;
 import static java.util.Arrays.*;
 import static org.acme.Utils.*;
 import static org.junit.Assert.*;
-import static org.sdmx.CodelistBuilder.*;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
@@ -16,7 +15,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
-import javax.xml.namespace.QName;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -34,10 +32,8 @@ import org.virtual.rtms.RtmsBrowser;
 import org.virtual.rtms.RtmsConnection;
 import org.virtual.rtms.RtmsPlugin;
 import org.virtual.rtms.RtmsProxy;
-import org.virtual.rtms.SdmxPublisher;
 import org.virtual.rtms.model.Codelist;
 import org.virtualrepository.Asset;
-import org.virtualrepository.RepositoryService;
 import org.virtualrepository.VirtualRepository;
 import org.virtualrepository.csv.CsvCodelist;
 import org.virtualrepository.impl.Repository;
@@ -60,10 +56,6 @@ public class IntegrationTests {
 
 	@Inject
 	BaseImporter importer;
-	
-	@Inject
-	SdmxPublisher publisher;
-	
 	
 	@Inject
 	StructureWriterManager manager;
@@ -244,15 +236,33 @@ public class IntegrationTests {
 	}
 	
 	@Test
-	public void publishSdmxCodelist() throws Exception {
+	public void publishBackFirstCodelistAsSdmx() throws Exception {
 		
-		inject(this);
+		VirtualRepository repo = new Repository();
+
+		repo.discover(SdmxCodelist.type);
+
+		Asset list = repo.iterator().next();
 		
-		CodelistBean bean = list().add(code("c").name("code","en")).end();
-		SdmxCodelist asset = new SdmxCodelist(bean.getName(),new RepositoryService(new QName("rtms"), proxy));
+		CodelistBean table = repo.retrieve(list,CodelistBean.class);
+
+		repo.publish(list,table);
 		
-		publisher.publish(asset,bean);
 		
+	}
+	
+	@Test
+	public void publishBackFirstCodelistAsCsv() throws Exception {
+		
+		VirtualRepository repo = new Repository();
+
+		repo.discover(CsvCodelist.type);
+
+		Asset list = repo.iterator().next();
+		
+		Table table = repo.retrieve(list,Table.class);
+
+		repo.publish(list,table);
 		
 	}
 

@@ -44,6 +44,9 @@ public class RtmsProxy implements ServiceProxy, Lifecycle {
 	@Inject
 	SdmxPublisher sdmxPublisher;
 	
+	@Inject
+	CsvPublisher csvPublisher;
+	
 	private final List<Publisher<?,?>> publishers = new ArrayList<Publisher<?,?>>();
 	private final List<Importer<?,?>> importers = new ArrayList<Importer<?,?>>();
 
@@ -59,6 +62,7 @@ public class RtmsProxy implements ServiceProxy, Lifecycle {
 		importers.add(adapt(csvImporter, new Table2CsvStream<CsvCodelist>()));
 		
 		publishers.add(sdmxPublisher);
+		publishers.add(csvPublisher);
 
 	}
 	
