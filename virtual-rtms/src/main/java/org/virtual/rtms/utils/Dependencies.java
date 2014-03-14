@@ -1,4 +1,4 @@
-package org.virtual.rtms;
+package org.virtual.rtms.utils;
 
 import java.io.InputStream;
 import java.sql.Connection;
@@ -8,6 +8,7 @@ import javax.inject.Singleton;
 import javax.sql.DataSource;
 
 import org.apache.commons.dbcp.BasicDataSource;
+import org.virtual.rtms.Configuration;
 
 import dagger.Module;
 import dagger.Provides;

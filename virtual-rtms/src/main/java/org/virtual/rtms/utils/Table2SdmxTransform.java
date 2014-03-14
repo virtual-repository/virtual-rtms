@@ -1,4 +1,4 @@
-package org.virtual.rtms.codelist;
+package org.virtual.rtms.utils;
 
 import static java.lang.String.*;
 
@@ -14,9 +14,9 @@ import org.virtualrepository.tabular.Column;
 import org.virtualrepository.tabular.Row;
 import org.virtualrepository.tabular.Table;
 
-public class Table2SdmxCodelist {
+public class Table2SdmxTransform {
 
-	private static Logger log = LoggerFactory.getLogger(Table2SdmxCodelist.class);
+	private static Logger log = LoggerFactory.getLogger(Table2SdmxTransform.class);
 	
 	public CodelistBean toSdmx(Asset asset, Table table) {
 		

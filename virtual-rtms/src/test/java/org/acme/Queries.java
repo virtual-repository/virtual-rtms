@@ -12,7 +12,7 @@ import java.sql.Statement;
 import javax.inject.Inject;
 
 import org.junit.Test;
-import org.virtual.rtms.Dependencies;
+import org.virtual.rtms.utils.Dependencies;
 
 import dagger.Module;
 

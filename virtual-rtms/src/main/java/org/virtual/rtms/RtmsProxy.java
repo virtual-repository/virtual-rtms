@@ -9,8 +9,6 @@ import javax.inject.Inject;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.virtual.rtms.codelist.CsvCodelistImporter;
-import org.virtual.rtms.codelist.SdmxCodelistImporter;
 import org.virtualrepository.csv.CsvCodelist;
 import org.virtualrepository.csv.Table2CsvStream;
 import org.virtualrepository.spi.Browser;
@@ -38,10 +36,10 @@ public class RtmsProxy implements ServiceProxy, Lifecycle {
 	RtmsBrowser browser;
 	
 	@Inject
-	CsvCodelistImporter csvImporter;
+	CsvImporter csvImporter;
 	
 	@Inject
-	SdmxCodelistImporter sdmxImporter;
+	SdmxImporter sdmxImporter;
 	
 	private final List<Publisher<?,?>> publishers = new ArrayList<Publisher<?,?>>();
 	private final List<Importer<?,?>> importers = new ArrayList<Importer<?,?>>();

@@ -1,4 +1,4 @@
-package org.virtual.rtms.codelist;
+package org.virtual.rtms;
 
 import javax.inject.Inject;
 
@@ -8,13 +8,13 @@ import org.virtualrepository.spi.Importer;
 import org.virtualrepository.tabular.Column;
 import org.virtualrepository.tabular.Table;
 
-public class CsvCodelistImporter implements Importer<CsvCodelist, Table> {
+public class CsvImporter implements Importer<CsvCodelist, Table> {
 
-	CodelistImporter importer;
+	BaseImporter importer;
 	
 	
 	@Inject
-	public CsvCodelistImporter(CodelistImporter importer)  {
+	public CsvImporter(BaseImporter importer)  {
 		this.importer = importer;
 	}
 	

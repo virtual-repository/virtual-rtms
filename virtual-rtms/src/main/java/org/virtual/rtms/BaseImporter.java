@@ -1,14 +1,12 @@
 /**
  * 
  */
-package org.virtual.rtms.codelist;
+package org.virtual.rtms;
 
 import javax.inject.Inject;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.virtual.rtms.Rtms;
-import org.virtual.rtms.RtmsConnection;
 import org.virtualrepository.Asset;
 import org.virtualrepository.tabular.Table;
 
@@ -18,14 +16,14 @@ import org.virtualrepository.tabular.Table;
  * <p>
  * It is wrapped to convert the model into specific asset types.
  */
-public class CodelistImporter {
+public class BaseImporter {
 
-	private static final Logger log = LoggerFactory.getLogger(CodelistImporter.class);
+	private static final Logger log = LoggerFactory.getLogger(BaseImporter.class);
 	
 	private final Rtms rtms;
 
 	@Inject
-	public CodelistImporter(Rtms rtms) {
+	public BaseImporter(Rtms rtms) {
 		this.rtms=rtms;
 	}
 	

@@ -7,7 +7,7 @@ import java.util.Properties;
 
 import org.junit.Test;
 import org.virtual.rtms.Configuration;
-import org.virtual.rtms.Dependencies;
+import org.virtual.rtms.utils.Dependencies;
 
 public class ConfigurationTest {
 

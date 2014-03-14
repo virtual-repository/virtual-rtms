@@ -7,6 +7,7 @@ import java.util.Collection;
 import javax.inject.Inject;
 import javax.xml.namespace.QName;
 
+import org.virtual.rtms.utils.Dependencies;
 import org.virtualrepository.Property;
 import org.virtualrepository.RepositoryService;
 import org.virtualrepository.spi.Plugin;

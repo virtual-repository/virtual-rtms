@@ -30,8 +30,8 @@ import org.slf4j.LoggerFactory;
 import org.virtual.rtms.Rtms;
 import org.virtual.rtms.RtmsBrowser;
 import org.virtual.rtms.RtmsConnection;
+import org.virtual.rtms.BaseImporter;
 import org.virtual.rtms.RtmsPlugin;
-import org.virtual.rtms.codelist.CodelistImporter;
 import org.virtual.rtms.model.Codelist;
 import org.virtualrepository.Asset;
 import org.virtualrepository.VirtualRepository;
@@ -55,7 +55,7 @@ public class IntegrationTests {
 	RtmsBrowser browser;
 
 	@Inject
-	CodelistImporter importer;
+	BaseImporter importer;
 
 	@BeforeClass
 	public static void setup() {

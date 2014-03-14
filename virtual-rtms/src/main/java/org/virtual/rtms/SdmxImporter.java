@@ -1,19 +1,20 @@
-package org.virtual.rtms.codelist;
+package org.virtual.rtms;
 
 import javax.inject.Inject;
 
 import org.sdmxsource.sdmx.api.model.beans.codelist.CodelistBean;
+import org.virtual.rtms.utils.Table2SdmxTransform;
 import org.virtualrepository.impl.Type;
 import org.virtualrepository.sdmx.SdmxCodelist;
 import org.virtualrepository.spi.Importer;
 import org.virtualrepository.tabular.Table;
 
-public class SdmxCodelistImporter implements Importer<SdmxCodelist,CodelistBean> {
+public class SdmxImporter implements Importer<SdmxCodelist,CodelistBean> {
 
-	private final CodelistImporter importer;
+	private final BaseImporter importer;
 
 	@Inject
-	public SdmxCodelistImporter(CodelistImporter importer)  {
+	public SdmxImporter(BaseImporter importer)  {
 		this.importer = importer;
 	}
 	
@@ -32,7 +33,7 @@ public class SdmxCodelistImporter implements Importer<SdmxCodelist,CodelistBean>
 		
 		Table table = importer.retrieve(asset);
 		
-		Table2SdmxCodelist transform = new Table2SdmxCodelist();
+		Table2SdmxTransform transform = new Table2SdmxTransform();
 		
 		return transform.toSdmx(asset, table);
 		
