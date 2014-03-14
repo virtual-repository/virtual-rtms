@@ -13,6 +13,11 @@ public class Configuration {
 	public static final String pwd = "figis.pwd";
 	public static final String validation_query = "figis.validation.query";
 	public static final String no_refresh = "figis.norefresh";
+	public static final String publish_host = "figis.publish.host";
+	public static final String publish_user = "figis.publish.user";
+	public static final String publish_pwd = "figis.publish.pwd";
+	public static final String publish_path = "figis.publish.path";
+	public static final String publish_timeout = "figis.publish.timeout";
 
 	private final Properties properties;
 
@@ -50,6 +55,26 @@ public class Configuration {
 	public boolean noRefresh() {
 		return properties.getProperty(no_refresh)!=null;
 	}
+	
+	public String publishHost() {
+		return properties.getProperty(publish_host);
+	}
+	
+	public String publishUser() {
+		return properties.getProperty(publish_user);
+	}
+	
+	public String publishPwd() {
+		return properties.getProperty(publish_pwd);
+	}
+	
+	public String publishPath() {
+		return properties.getProperty(publish_path);
+	}
+	
+	public int publishTimeout() {
+		return Integer.valueOf(properties.getProperty(publish_timeout));
+	}
 
 	private void validate(Properties properties) {
 
@@ -58,9 +83,12 @@ public class Configuration {
 		notNull(url, properties.getProperty(url));
 		notNull(user, properties.getProperty(user));
 		notNull(pwd, properties.getProperty(pwd));
-
-		// Should we assume that the DB VALIDATION QUERY can be optional?
-		// notNull(CONFIG_DB_VALIDATION_QUERY,
-		// properties.getProperty(CONFIG_DB_VALIDATION_QUERY));
+		
+		notNull(publish_host, properties.getProperty(publish_host));
+		notNull(publish_path, properties.getProperty(publish_path));
+		notNull(publish_user, properties.getProperty(publish_user));
+		notNull(publish_pwd, properties.getProperty(publish_pwd));
+		notNull(publish_timeout, properties.getProperty(publish_timeout));
+		
 	}
 }

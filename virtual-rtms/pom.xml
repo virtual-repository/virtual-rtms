@@ -87,6 +87,12 @@
 			<scope>test</scope>
 		</dependency>
 
+		<dependency>
+			<groupId>net.schmizz</groupId>
+			<artifactId>sshj</artifactId>
+			<version>0.9.0</version>
+			<type>jar</type>
+		</dependency>
 
 	</dependencies>
 

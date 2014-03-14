@@ -4,6 +4,7 @@ import static java.lang.System.*;
 import static java.util.Arrays.*;
 import static org.acme.Utils.*;
 import static org.junit.Assert.*;
+import static org.sdmx.CodelistBuilder.*;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
@@ -15,10 +16,10 @@ import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
+import javax.xml.namespace.QName;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.sdmx.SdmxServiceFactory;
 import org.sdmxsource.sdmx.api.constants.STRUCTURE_OUTPUT_FORMAT;
 import org.sdmxsource.sdmx.api.manager.output.StructureWriterManager;
 import org.sdmxsource.sdmx.api.model.beans.SdmxBeans;
@@ -27,13 +28,16 @@ import org.sdmxsource.sdmx.sdmxbeans.model.SdmxStructureFormat;
 import org.sdmxsource.sdmx.util.beans.container.SdmxBeansImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.virtual.rtms.BaseImporter;
 import org.virtual.rtms.Rtms;
 import org.virtual.rtms.RtmsBrowser;
 import org.virtual.rtms.RtmsConnection;
-import org.virtual.rtms.BaseImporter;
 import org.virtual.rtms.RtmsPlugin;
+import org.virtual.rtms.RtmsProxy;
+import org.virtual.rtms.SdmxPublisher;
 import org.virtual.rtms.model.Codelist;
 import org.virtualrepository.Asset;
+import org.virtualrepository.RepositoryService;
 import org.virtualrepository.VirtualRepository;
 import org.virtualrepository.csv.CsvCodelist;
 import org.virtualrepository.impl.Repository;
@@ -56,7 +60,17 @@ public class IntegrationTests {
 
 	@Inject
 	BaseImporter importer;
-
+	
+	@Inject
+	SdmxPublisher publisher;
+	
+	
+	@Inject
+	StructureWriterManager manager;
+	
+	@Inject
+	RtmsProxy proxy;
+	
 	@BeforeClass
 	public static void setup() {
 
@@ -169,11 +183,11 @@ public class IntegrationTests {
 	@Test
 	public void retrieveFirstCodelistAsSdmx() throws Exception {
 		
+		inject(this);
+		
 		VirtualRepository repo = new Repository();
 
 		repo.discover(SdmxCodelist.type);
-
-		StructureWriterManager manager = SdmxServiceFactory.writer();
 
 		CodelistBean bean = repo.retrieve(repo.iterator().next(),CodelistBean.class);
 		
@@ -227,6 +241,19 @@ public class IntegrationTests {
 		for (Asset list : browser.discover(Arrays.asList(SdmxCodelist.type)))
 			log.debug(list.toString());
 
+	}
+	
+	@Test
+	public void publishSdmxCodelist() throws Exception {
+		
+		inject(this);
+		
+		CodelistBean bean = list().add(code("c").name("code","en")).end();
+		SdmxCodelist asset = new SdmxCodelist(bean.getName(),new RepositoryService(new QName("rtms"), proxy));
+		
+		publisher.publish(asset,bean);
+		
+		
 	}
 
 

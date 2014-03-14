@@ -10,6 +10,7 @@ import javax.inject.Inject;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.sdmxsource.sdmx.api.manager.output.StructureWriterManager;
 import org.virtual.rtms.Configuration;
 import org.virtual.rtms.Rtms;
 import org.virtual.rtms.RtmsPlugin;
@@ -28,6 +29,9 @@ public class InjectionTest {
 	@Inject
 	Rtms rtms;
 	
+	@Inject
+	StructureWriterManager manager;
+	
 	@BeforeClass
 	public static void setup() {
 		
@@ -42,7 +46,7 @@ public class InjectionTest {
 		
 		assertNotNull(config);
 		assertNotNull(rtms);
-		
+		assertNotNull(manager);
 	}
 	
 	@Test

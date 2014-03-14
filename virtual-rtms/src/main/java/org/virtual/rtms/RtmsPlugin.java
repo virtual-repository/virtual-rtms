@@ -7,6 +7,7 @@ import java.util.Collection;
 import javax.inject.Inject;
 import javax.xml.namespace.QName;
 
+import org.sdmxsource.sdmx.api.manager.output.StructureWriterManager;
 import org.virtual.rtms.utils.Dependencies;
 import org.virtualrepository.Property;
 import org.virtualrepository.RepositoryService;
@@ -19,7 +20,7 @@ import dagger.ObjectGraph;
  * Provides an access service to one given Rtms installation.
  * 
  */
-@Module(injects=RtmsPlugin.class,includes=Dependencies.class)
+@Module(includes=Dependencies.class)
 public class RtmsPlugin implements Plugin {
 
 	public static QName name = new QName("rtms");
@@ -34,12 +35,14 @@ public class RtmsPlugin implements Plugin {
 	@Inject
 	Configuration configuration;
 	
+	@Inject
+	StructureWriterManager m;
 
 	
 	@Override
 	public Collection<RepositoryService> services() {
 		
-		ObjectGraph.create(this,Dependencies.instance).inject(this);
+		ObjectGraph.create(this).inject(this);
 		
 		RepositoryService service = new RepositoryService(name,proxy,properties());
 		
