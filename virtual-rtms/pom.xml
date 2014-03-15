@@ -146,13 +146,13 @@
 				<version>2.6</version>
 				<executions>
 					<execution>
-						<id>copy-resources</id>
+						<id>copy-properties</id>
 						<phase>validate</phase>
 						<goals>
 							<goal>copy-resources</goal>
 						</goals>
 						<configuration>
-							<outputDirectory>src/test/resources</outputDirectory>
+							<outputDirectory>src/main/resources</outputDirectory>
 							<overwrite>true</overwrite>
 							<resources>
 								<resource>
