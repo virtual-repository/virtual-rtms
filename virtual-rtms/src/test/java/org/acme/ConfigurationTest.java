@@ -27,6 +27,11 @@ public class ConfigurationTest {
 		properties.put(user, "user");
 		properties.put(pwd, "pwd");
 		properties.put(endpoint, "endpoint");
+		properties.put(publish_host, "host");
+		properties.put(publish_user, "puser");
+		properties.put(publish_pwd, "ppwd");
+		properties.put(publish_path, "ppath");
+		properties.put(publish_timeout, "10");
 		
 		Configuration c = new Configuration(properties);
 		
@@ -35,6 +40,11 @@ public class ConfigurationTest {
 		assertEquals(c.endpoint(),properties.get(endpoint));
 		assertEquals(c.user(),properties.get(user));
 		assertEquals(c.pwd(),properties.get(pwd));
+		assertEquals(c.publishHost(),properties.get(publish_host));
+		assertEquals(c.publishTimeout()+"",properties.get(publish_timeout)); //comparing strings
+		assertEquals(c.publishUser(),properties.get(publish_user));
+		assertEquals(c.publishPwd(),properties.get(publish_pwd));
+		
 	}
 	
 	@Test

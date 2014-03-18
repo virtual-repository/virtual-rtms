@@ -36,7 +36,8 @@ public class InjectionTest {
 	public static void setup() {
 		
 		setProperty("org.slf4j.simpleLogger.defaultLogLevel", "trace");
-		
+		setProperty("org.slf4j.simpleLogger.log.org.springframework", "warn");
+	
 	}
 	
 	@Test

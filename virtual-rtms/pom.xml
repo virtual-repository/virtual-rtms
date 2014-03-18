@@ -22,7 +22,7 @@
 		</repository>
 		<repository>
 			<id>sdmxsource</id>
-			<url>http://www.metadatatechnology.com/nexus/content/repositories/releases</url>
+			<url>http://sdmxsource.metadatatechnology.com/nexus/content/repositories/releases</url>
 			<snapshots>
 				<enabled>true</enabled>
 			</snapshots>
