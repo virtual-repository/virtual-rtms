@@ -6,6 +6,7 @@ import static org.acme.Utils.*;
 import static org.junit.Assert.*;
 
 import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -36,6 +37,7 @@ import org.virtual.rtms.model.Codelist;
 import org.virtualrepository.Asset;
 import org.virtualrepository.VirtualRepository;
 import org.virtualrepository.csv.CsvCodelist;
+import org.virtualrepository.csv.CsvTable;
 import org.virtualrepository.impl.Repository;
 import org.virtualrepository.sdmx.SdmxCodelist;
 import org.virtualrepository.tabular.Row;
@@ -156,7 +158,7 @@ public class IntegrationTests {
 	}
 
 	@Test
-	public void retrieveFirstCodelistAsCsv() throws Exception {
+	public void retrieveFirstCodelistAsTable() throws Exception {
 
 		VirtualRepository repo = new Repository();
 
@@ -170,6 +172,23 @@ public class IntegrationTests {
 		
 		for (Row row : table)
 			log.debug(row.toString());
+	}
+	
+	@Test
+	public void retrieveFirstCodelistAsStream() throws Exception {
+
+		VirtualRepository repo = new Repository();
+
+		repo.discover(CsvCodelist.type);
+
+		Asset list = repo.iterator().next();
+		
+		InputStream stream = repo.retrieve(list,InputStream.class);
+
+		Table table = new CsvTable((CsvCodelist)list, stream);
+		
+		for (Row row : table)
+			System.out.println(row);
 	}
 	
 	@Test
