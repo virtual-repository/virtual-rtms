@@ -156,6 +156,26 @@ public class IntegrationTests {
 			log.debug(row.toString());
 		
 	}
+	
+	@Test
+	public void retrieveGivenCodelist() throws Exception {
+
+		inject(this);
+
+		String name = "rtms-Gear category (intl.)-ISSCFG Code";
+
+		Iterable<? extends Asset> codelists = browser.discover(asList(CsvCodelist.type));
+
+		for (Asset list  : codelists) 
+			if (list.name().equals(name)) {
+				Table table = importer.retrieve(list);
+				for (Row row : table)
+					log.debug(row.toString());
+			}
+		
+	}
+	
+	
 
 	@Test
 	public void retrieveFirstCodelistAsTable() throws Exception {

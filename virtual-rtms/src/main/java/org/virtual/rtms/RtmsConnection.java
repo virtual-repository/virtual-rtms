@@ -257,7 +257,9 @@ public class RtmsConnection implements AutoCloseable {
 
 			Column code = new Column(codelist.column());
 			
-			List<Column> columns = columns(rs,codelist,code);
+			ResultSetMetaData metadata = rs.getMetaData();
+			
+			List<Column> columns = columns(metadata,codelist,code);
 			
 			List<Row> rows = new ArrayList<>();
 			
@@ -265,7 +267,7 @@ public class RtmsConnection implements AutoCloseable {
 			
 			while (rs.next()) {
 				
-				Row row = nextRow(rs,columns);
+				Row row = nextRow(rs,metadata,columns);
 				
 				 //add only valid data (with code)
 				if (row.get(code) != null) {
@@ -288,14 +290,24 @@ public class RtmsConnection implements AutoCloseable {
 
 	}
 
-	//helpers
-	private Row nextRow(ResultSet rs,List<Column> columns) throws Exception {
+	private Row nextRow(ResultSet rs, ResultSetMetaData metadata, List<Column> columns) throws Exception {
+		
+
+		Map<String,String> rowmap = new HashMap<>();
+		
+		for (int i = 1; i < metadata.getColumnCount(); i++)
+			if (rs.getString(i)!=null)
+				rowmap.put(metadata.getColumnName(i), rs.getString(i));
+		
+		
 		Map<QName, String> data = new Hashtable<QName, String>(columns.size());
 
-		for (int i = 0; i < columns.size(); i++)
-			if (rs.getString(i+1)!=null)
-				data.put(columns.get(i).name(), rs.getString(i+1));
-		
+		for (Column column : columns) {
+			String val = rowmap.get(column.name().toString());
+			if (val!=null)
+				data.put(column.name(),val);
+		}
+
 		Row row = new Row(data);
 		
 		return row;
@@ -319,16 +331,14 @@ public class RtmsConnection implements AutoCloseable {
 	}
 	
 	
-	private List<Column> columns(ResultSet rs,Codelist codelist, Column codeColumn) throws Exception {
+	private List<Column> columns(ResultSetMetaData metadata, Codelist codelist, Column codeColumn) throws Exception {
 		
 		List<Column> columns = new ArrayList<>();
-		
-		String code = codelist.column();
-		String meta = codelist.entityColumn();
-		
+
 		columns.add(codeColumn);
 
-		ResultSetMetaData metadata = rs.getMetaData();
+		String code = codelist.column();
+		String meta = codelist.entityColumn();
 		
 		for (int i=1; i<=metadata.getColumnCount(); i++) {
 		
